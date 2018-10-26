@@ -1,6 +1,6 @@
 # Boilerplate Box Skill Code Using Skills-Kit, Serverless, Eslint & Jest
 
-Use serverless to help in your code deployment and development - https://serverless.com/framework/docs/providers/aws/guide/serverless.yml/
+Use [serverless](https://serverless.com) to help in your code deployment and development
 
 You can change it to any cloud provider:
 [AWS Lambda](https://aws.amazon.com/lambda/), [Microsoft Azure](https://azure.microsoft.com/en-us/overview/serverless-computing/), [Google Cloud Functions](https://cloud.google.com/functions/) or 
