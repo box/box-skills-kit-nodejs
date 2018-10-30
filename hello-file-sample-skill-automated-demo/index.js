@@ -2,7 +2,7 @@
 const { FilesReader, SkillsWriter } = require('skills-kit-lib/skills-kit-2.0');
 
 module.exports.handler = async (event, context, callback) => {
-    // create new FilesReader object, and retrieve fileContext.
+    // create new FilesReader object and retrieve fileContext.
     console.debug(`Box event received: ${JSON.stringify(event)}`);
 
     const filesReader = new FilesReader(event.body);
