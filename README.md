@@ -1,6 +1,8 @@
 # Box Skills Kit Node.js SDK
 Official SDK for writing Box Skills in Node.js
 
+You can visit the [Box Skills Developer Documentation](https://developer.box.com/docs/box-skills) for more information about Box Skills.
+
 The Box Skills Kit SDK allows your application to receive and interpret event notifications from Box, retreive data from Box, and write to metadata in Box. 
 
 The Box Skills Kit Node.js SDK contains two classes:
