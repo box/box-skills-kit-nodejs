@@ -1,4 +1,2 @@
-# box-skills-kit
-Official sdk for writing Box Skills, along with sample boilerplate code.
-
-
+# Box Skills Kit Node.js
+Official SDK for writing Box Skills in Node.js
