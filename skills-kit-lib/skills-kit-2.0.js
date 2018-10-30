@@ -18,7 +18,6 @@ const urlPath = require('box-node-sdk/lib/util/url-path');
 const path = require('path');
 const trimStart = require('lodash/trimStart');
 const jimp = require('jimp');
-const request = require('request');
 
 /* Constant values for writing cards to skill_invocations service */
 const BASE_PATH = '/skill_invocations'; // Base path for all files endpoints

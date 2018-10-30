@@ -10,5 +10,9 @@
         "jimp": "^0.5.4",
         "lodash": "^4.17.10",
         "path": "^0.12.7"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:box/box-skills-kit-nodejs.git"
     }
 }

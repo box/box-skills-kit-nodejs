@@ -5,13 +5,16 @@
     "scripts": {
         "format": "NODE_ENV=dev ./node_modules/.bin/prettier \"**/*.js\" --print-width 120 --single-quote --tab-width 4 --write; ./node_modules/.bin/eslint \"**/*.js\" --fix",
         "test": "NODE_ENV=dev ./node_modules/.bin/jest --coverage",
-        "build": "npm install; npm link ../skills-kit-lib; npm run format;",
+        "build": "npm link ../skills-kit-lib; npm install;",
         "deploy": "npm run build;  ./node_modules/.bin/serverless deploy",
-        "undeploy": "NODE_ENV=dev ./node_modules/.bin/serverless remove -v",
-        "postdeploy": "serverless invoke --function skill --path integration-test-request.json --log"
+        "undeploy": "NODE_ENV=dev ./node_modules/.bin/serverless remove -v"
     },
     "author": "Box <oss@box.com>",
     "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:box/box-skills-kit-nodejs.git"
+    },
     "homepage": "https://developer.box.com/docs/box-skills",
     "devDependencies": {
         "babel-eslint": "^8.2.2",
