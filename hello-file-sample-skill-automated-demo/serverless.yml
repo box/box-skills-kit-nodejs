@@ -26,8 +26,8 @@ provider:
 package:
   include:
     - index.js
-    - ../skills-kit-2.0.js
     - package.json
+    - node_modules
 
 functions:
   skill:

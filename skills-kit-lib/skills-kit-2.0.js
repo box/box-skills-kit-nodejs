@@ -18,6 +18,7 @@ const urlPath = require('box-node-sdk/lib/util/url-path');
 const path = require('path');
 const trimStart = require('lodash/trimStart');
 const jimp = require('jimp');
+const request = require('request');
 
 /* Constant values for writing cards to skill_invocations service */
 const BASE_PATH = '/skill_invocations'; // Base path for all files endpoints
@@ -44,11 +45,11 @@ boxVideoFormats.push('mpg', 'ogg', 'mts', 'qt', 'ts', 'wmv');
 const boxAudioFormats = ['aac', 'aif', 'aifc', 'aiff', 'amr', 'au', 'flac', 'm4a', 'mp3', 'ra', 'wav', 'wma'];
 const boxDocumentFormats = ['pdf'];
 
-const getFileFormat = fileName => {
+const getFileFormat = (fileName) => {
     const fileExtension = path.extname(fileName);
     return trimStart(fileExtension, '.');
 };
-const getFileType = fileFormat => {
+const getFileType = (fileFormat) => {
     if (boxAudioFormats.includes(fileFormat)) return FileType.AUDIO;
     else if (boxDocumentFormats.includes(fileFormat)) return FileType.DOCUMENT;
     else if (boxVideoFormats.includes(fileFormat)) return FileType.VIDEO;
@@ -117,16 +118,16 @@ function SkillsWriter(fileContext) {
  * @param  {Object} stream - read stream
  * @return Promise - resolves to the string of information read from the stream
  */
-const readStreamToString = stream => {
+const readStreamToString = (stream) => {
     if (!stream || typeof stream !== 'object') {
         throw new TypeError('Invalid Stream, must be a readable stream.');
     }
     return new Promise((resolve, reject) => {
         const chunks = [];
-        stream.on('data', chunk => {
+        stream.on('data', (chunk) => {
             chunks.push(chunk);
         });
-        stream.on('error', err => {
+        stream.on('error', (err) => {
             reject(err);
         });
         stream.on('end', () => {
@@ -180,7 +181,7 @@ FilesReader.prototype.validateSize = function validateSize(allowedMegabytesNum) 
  */
 FilesReader.prototype.getContentStream = function getContentStream() {
     return new Promise((resolve, reject) => {
-        this.readClient.files.getReadStream(this.fileId, null, (error, stream) => {
+        this.fileReadClient.files.getReadStream(this.fileId, null, (error, stream) => {
             if (error) {
                 reject(error);
             } else {
@@ -196,13 +197,13 @@ FilesReader.prototype.getContentStream = function getContentStream() {
 FilesReader.prototype.getContentBase64 = function getContentBase64() {
     return new Promise((resolve, reject) => {
         this.getContentStream()
-            .then(stream => {
+            .then((stream) => {
                 resolve(readStreamToString(stream));
             })
-            .then(content => {
+            .then((content) => {
                 resolve(content);
             })
-            .catch(e => {
+            .catch((e) => {
                 reject(e);
             });
     });
@@ -217,12 +218,12 @@ FilesReader.prototype.getBasicFormatFileURL = function getBasicFormatFileURL() {
     else if (this.fileType === FileType.VIDEO) representationType = '[mp4]';
     else if (this.fileType === FileType.DOCUMENT) representationType = '[pdf]';
     return new Promise((resolve, reject) => {
-        this.readClient.files
+        this.fileReadClient.files
             .getRepresentationInfo(this.fileId, representationType)
-            .then(response => {
-                resolve(response.headers.location);
+            .then((response) => {
+                resolve(`${response.entries[0].info.url}?access_token=${this.fileReadToken}`);
             })
-            .catch(e => {
+            .catch((e) => {
                 reject(e);
             });
     });
@@ -236,7 +237,7 @@ FilesReader.prototype.getBasicFormatContentStream = function getBasicFormatConte
         streaming: true,
         headers: {}
     };
-    this.client.get(this.getBasicFormatFileURL(), downloadStreamOptions);
+    this.fileReadClient.get(this.getBasicFormatFileURL(), downloadStreamOptions);
 };
 
 /*
@@ -245,13 +246,13 @@ FilesReader.prototype.getBasicFormatContentStream = function getBasicFormatConte
 FilesReader.prototype.getBasicFormatContentBase64 = function getBasicFormatContentBase64() {
     return new Promise((resolve, reject) => {
         this.getBasicFormatContentStream()
-            .then(stream => {
+            .then((stream) => {
                 resolve(readStreamToString(stream));
             })
-            .then(content => {
+            .then((content) => {
                 resolve(content);
             })
-            .catch(e => {
+            .catch((e) => {
                 reject(e);
             });
     });
@@ -364,7 +365,13 @@ const processCardData = (cardData, duration) => {
  * @param {number} optionalfileDuration (optional) total duration of file in seconds
  * @return {Object} metadata card template
  */
-const createMetadataCard = (type, title, optionalStatus, optionalEntries, optionalfileDuration) => {
+SkillsWriter.prototype.createMetadataCard = function createMetadataCard(
+    type,
+    title,
+    optionalStatus,
+    optionalEntries,
+    optionalfileDuration
+) {
     const status = optionalStatus || {};
     const titleCode = `skills_${title.toLowerCase()}`.replace(' ', '_');
     const template = {
@@ -425,8 +432,8 @@ SkillsWriter.prototype.createTopicsCard = function createTopicsCard(
     optionalFileDuration,
     optionalCardTitle
 ) {
-    topicsDataList.forEach(topic => processCardData(topic, optionalFileDuration));
-    return createMetadataCard(
+    topicsDataList.forEach((topic) => processCardData(topic, optionalFileDuration));
+    return this.createMetadataCard(
         cardType.TOPIC,
         optionalCardTitle || cardTitle.TOPIC,
         {}, // Empty status value, since this is a data card
@@ -440,8 +447,8 @@ SkillsWriter.prototype.createTranscriptsCard = function createTranscriptsCard(
     optionalFileDuration,
     optionalCardTitle
 ) {
-    transcriptsDataList.forEach(transcript => processCardData(transcript, optionalFileDuration));
-    return createMetadataCard(
+    transcriptsDataList.forEach((transcript) => processCardData(transcript, optionalFileDuration));
+    return this.createMetadataCard(
         cardType.TRANSCRIPT,
         optionalCardTitle || cardTitle.TRANSCRIPT,
         {}, // Empty status value, since this is a data card
@@ -450,37 +457,49 @@ SkillsWriter.prototype.createTranscriptsCard = function createTranscriptsCard(
     );
 };
 
-const getResizedImageURI = imageURL =>
-    new Promise(resolve =>
-        jimp
-            .read(imageURL)
-            .then(image => resolve(image.resize(256, 256).getBase64Async()))
-            .catch(e => console.log(e))
-    );
-SkillsWriter.prototype.createFacesCard = function createTranscriptsCard(
+SkillsWriter.prototype.createFacesCard = function createFacesCard(
     facesDataList,
     optionalFileDuration,
     optionalCardTitle
 ) {
-    const dataURIPromises = [];
-    facesDataList.forEach(face => dataURIPromises.push(getResizedImageURI(face.image_url)));
-    // promise.all rejects if one of the promises in the array gets rejected,
-    // without considering whether or not the other promises have resolved.
-    // This is to make sure Promise.all continues evluating all promises inspite some rejections.
-    const allDataURIPromises = dataURIPromises.map(p => p.catch(() => undefined));
-    Promise.all(allDataURIPromises).then(dataURIs => {
-        facesDataList.forEach((face, i) => {
-            face.image_url = dataURIs[i];
-            processCardData(face, optionalFileDuration);
-        });
+    facesDataList.forEach((face) => processCardData(face, optionalFileDuration));
+    const cards = this.createMetadataCard(
+        cardType.FACES,
+        optionalCardTitle || cardTitle.FACES,
+        {}, // Empty status value, since this is a data card
+        facesDataList,
+        optionalFileDuration
+    );
 
-        return createMetadataCard(
-            cardType.FACES,
-            optionalCardTitle || cardTitle.FACES,
-            {}, // Empty status value, since this is a data card
-            facesDataList,
-            optionalFileDuration
+    const dataURIPromises = [];
+    for (let i = 0; i < facesDataList.length; i++) {
+        dataURIPromises.push(
+            jimp
+                .read(facesDataList[i].image_url)
+                .then((image) => {
+                    // resize the image to be thumbnail size
+                    return image.resize(45, 45).getBase64Async(jimp.MIME_PNG);
+                })
+                // promise.all rejects if one of the promises in the array gets rejected,
+                // without considering whether or not the other promises have resolved.
+                // This is to make sure Promise.all continues evluating all promises inspite some rejections.
+
+                .catch(() => undefined)
         );
+    }
+
+    return new Promise((resolve, reject) => {
+        Promise.all(dataURIPromises)
+            .then((dataURIs) => {
+                for (let i = 0; i < facesDataList.length; i++) {
+                    // facesDataList[i].type = 'image';
+                    facesDataList[i].image_url = dataURIs[i] || facesDataList[i].image_url;
+                }
+                resolve(cards);
+            })
+            .catch((error) => {
+                reject(error);
+            });
     });
 };
 
@@ -491,8 +510,11 @@ SkillsWriter.prototype.createFacesCard = function createTranscriptsCard(
  * card has been saved.
  */
 SkillsWriter.prototype.savePendingStatusCard = function savePendingStatusCard(optionalCallback) {
-    const status = { code: 'skills_pending_status', message: "We're preparing to process your file. Please hold on!" };
-    const statusCard = createMetadataCard(cardType.STATUS, cardTitle.STATUS, status);
+    const status = {
+        code: 'skills_pending_status',
+        message: "We're preparing to process your file. Please hold on!"
+    };
+    const statusCard = this.createMetadataCard(cardType.STATUS, cardTitle.STATUS, status);
     return this.saveDataCards([statusCard], optionalCallback, skillInvocationStatus.PROCESSING);
 };
 
@@ -513,7 +535,7 @@ SkillsWriter.prototype.saveErrorStatusCard = function saveErrorStatusCard(
         : skillInvocationStatus.PERMANENT_FAILURE;
     const errorJSON = validateEnum(error, this.error) ? error : this.error.UNKNOWN;
     if (optionalCustomMessage) errorJSON.message = optionalCustomMessage;
-    const errorCard = createMetadataCard(cardType.STATUS, cardTitle.ERROR, errorJSON);
+    const errorCard = this.createMetadataCard(cardType.STATUS, cardTitle.ERROR, errorJSON);
     return this.saveDataCards([errorCard], optionalCallback, failureType);
 };
 
@@ -521,6 +543,7 @@ SkillsWriter.prototype.saveErrorStatusCard = function saveErrorStatusCard(
  * Shows all the cards passed in listofDataCardJSONs which can be of formatted as Topics,Transcripts
  * or Faces. Will override any existing pending or error status cards in the UI for that file version.
  */
+const DEFAULT_USAGE = { unit: usageUnit.FILES, value: 1 };
 SkillsWriter.prototype.saveDataCards = function saveDataCards(
     listofDataCardJSONs,
     optionalCallback,
@@ -538,8 +561,9 @@ SkillsWriter.prototype.saveDataCards = function saveDataCards(
         metadata: {
             cards: listofDataCardJSONs
         },
-        optionalUsage
+        usage: DEFAULT_USAGE
     };
+
     return putData(this.fileWriteClient, this.skillId, body, optionalCallback);
 };
 
