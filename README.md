@@ -31,6 +31,7 @@ Note: BasicFormat functions allows you to access files stored in Box in another 
  
  ## SkillsWriter
  A helpful class to write metadata to Box to display in cards for Topics, Transcripts, Timelines, Errors and Statuses for any file for which a Box Skill processes.
+
 **SkillsWriter( fileContext )  (see FilesReader.getFileContext above)**
 
 | Functions                                                                                           | Returns       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
@@ -42,7 +43,7 @@ Note: BasicFormat functions allows you to access files stored in Box in another 
 | SkillsWriter.saveErrorStatusCard ( error, optionalCustomMessage, optionalCallback )                 | Null          | Show UI card with error message. See Table: Error Enum for potential error values, to notify user if any kind of failure occurs while running your skills code. Shows card as per the default message with each code, unless 'optionCustomMessage' is provided. You can pass an optionalCallback function to print or log success in your code once the card has been saved.                                                                                                                                                                                                                                                                                                       |
 | SkillsWriter.saveDataCards ( listofDataCardJSONs, optionalCallback)                                 | Null          | Shows all the cards passed in listofDataCardJSONswhich can be of formatted as Topics,Transcripts or Faces. Will override any existing pending or error status cards in the UI for that file version.                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
  ## Error Enum
- Possible error messages to display in an ErrorStatus card
+ Possible error messages to display in an ErrorStatus card.
  
 | Functions                                      | Description                                                                                             |
 |------------------------------------------------|---------------------------------------------------------------------------------------------------------|
