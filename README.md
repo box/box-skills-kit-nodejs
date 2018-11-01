@@ -13,6 +13,7 @@ Using these two classes, your application can retrieve files as they're uploaded
 
 ## FilesReader
 A helpful class to capture file information from the incoming event notification from Box and to retrieve the file's content from Box
+
 **FilesReader( boxEvent.body ) CONSTRUCTOR**
 
 | Functions                                           | Returns          | Description                                                                                                                                                     |
@@ -29,7 +30,8 @@ A helpful class to capture file information from the incoming event notification
 Note: BasicFormat functions allows you to access files stored in Box in another format, which may be more accepted by ML providers. The provided basic formats are Audio files→.mp3, Document/Image files→.jpeg, Video files→.mp4. Caution should be excercised using BasicFormats for certain large files as it involves a time delay, and your skill code or skills-engine request may time out before the converted format is fetched.
  
  ## SkillsWriter
-** SkillsWriter( fileContext )  (see FilesReader.getFileContext above)**
+ A helpful class to write metadata to Box to display in cards for Topics, Transcripts, Timelines, Errors and Statuses for any file for which a Box Skill processes.
+**SkillsWriter( fileContext )  (see FilesReader.getFileContext above)**
 
 | Functions                                                                                           | Returns       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 |-----------------------------------------------------------------------------------------------------|---------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -40,6 +42,8 @@ Note: BasicFormat functions allows you to access files stored in Box in another 
 | SkillsWriter.saveErrorStatusCard ( error, optionalCustomMessage, optionalCallback )                 | Null          | Show UI card with error message. See Table: Error Enum for potential error values, to notify user if any kind of failure occurs while running your skills code. Shows card as per the default message with each code, unless 'optionCustomMessage' is provided. You can pass an optionalCallback function to print or log success in your code once the card has been saved.                                                                                                                                                                                                                                                                                                       |
 | SkillsWriter.saveDataCards ( listofDataCardJSONs, optionalCallback)                                 | Null          | Shows all the cards passed in listofDataCardJSONswhich can be of formatted as Topics,Transcripts or Faces. Will override any existing pending or error status cards in the UI for that file version.                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
  ## Error Enum
+ Possible error messages to display in an ErrorStatus card
+ 
 | Functions                                      | Description                                                                                             |
 |------------------------------------------------|---------------------------------------------------------------------------------------------------------|
 | SkillsWriter.ErrorCode.FILE_PROCESSING_ERROR   | Shows card: "We're sorry, something went wrong with processing the file."                               |
