@@ -5,10 +5,7 @@
     "author": "Box <oss@box.com>",
     "license": "Apache-2.0",
     "homepage": "https://developer.box.com/docs/box-skills",
-    "dependencies": {
-        "box-node-sdk": "^1.9.0",
-        "jimp": "^0.5.4",
-        "lodash": "^4.17.10",
-        "path": "^0.12.7"
+    "scripts": {
+        "build": "npm link ../skills-kit-lib;"
     }
 }

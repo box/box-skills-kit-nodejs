@@ -1,53 +1,62 @@
-// import FilesReader and SkillsWriter classes from skills-kit-2.0.js library
-const { FilesReader, SkillsWriter } = require('../skill-kit-lib/skills-kit-2.0');
+// Import FilesReader and SkillsWriter classes from skills-kit-2.0.js library
+const { FilesReader, SkillsWriter } = require('skills-kit-lib/skills-kit-2.0');
 
 module.exports.handler = async (event, context, callback) => {
-    // create new FilesReader object, and retrieve fileContext.
     console.debug(`Box event received: ${JSON.stringify(event)}`);
 
+    // instantiate your two skill development helper tools
     const filesReader = new FilesReader(event.body);
-    const fileContext = filesReader.getFileContext();
-
-    // create new SkillsWriter object
-    const skillsWriter = new SkillsWriter(fileContext);
-    skillsWriter.savePendingStatusCard();
+    const skillsWriter = new SkillsWriter(filesReader.getFileContext());
 
     try {
-        // one of six ways of accessing file content from Box for ML processing (ML processing code not shown here).
-        const mp3Base64FileURL = await filesReader.getBasicFormatFileURL(); // eslint-disable-line no-unused-vars
+        // One of six ways of accessing file content from Box for ML processing with FilesReader
+        // ML processing code not shown here, and will need to be added by the skill developer.
+        // ( see a quick sample of ML call for a skill here: https://www.diffchecker.com/MvOs9xow )
+        const base64File = await filesReader.getBasicFormatContentBase64(); // eslint-disable-line no-unused-vars
+        console.log(`printing simplified format file content in base64 encoding: ${base64File}`);
 
-        // a simple card showing multiple keywords/topics.
-        const topicJSON = skillsWriter.createTopicsCard([{ text: 'Hello' }, { text: 'File' }]);
+        const mockListOfDiscoveredKeywords = [{ text: 'file' }, { text: 'associated' }, { text: 'keywords' }];
+        const mockListOfDiscoveredTranscripts = [{ text: `This is a sentence/transcript card` }];
+        const mockListOfDiscoveredFaceWithPublicImageURI = [
+            {
+                image_url: 'https://seeklogo.com/images/B/box-logo-646A3D8C91-seeklogo.com.png',
+                text: `Image hover/placeholder text if image doesn't load`
+            }
+        ];
+        const mockListOfTranscriptsWithAppearsAtForPlaybackFiles = [
+            {
+                text: 'Timeline data can be shown in any card type',
+                appears: [{ start: 1, end: 2 }]
+            },
+            {
+                text: "Just add 'appears' field besides any 'text', with start and end values in seconds",
+                appears: [{ start: 3, end: 4 }]
+            }
+        ];
 
-        // the sentence here will also appear with an associated timeline in the UI. Timelines information can be added to any type of cards.
-        const transcriptJSON = skillsWriter.createTranscriptsCard(
-            [{ text: `Hello file ${fileContext.fileId}`, appears: [{ start: 0, end: 1 }] }],
-            1
-        );
+        // Turn your data into correctly formatted card jsons usking SkillsWriter.
+        // The cards will appear in UI in same order as they are passed in a list.
+        const cards = [];
+        cards.push(await skillsWriter.createFacesCard(mockListOfDiscoveredFaceWithPublicImageURI, null, 'Icons')); // changing card title to non-default 'Icons'.
+        cards.push(skillsWriter.createTopicsCard(mockListOfDiscoveredKeywords));
+        cards.push(skillsWriter.createTranscriptsCard(mockListOfDiscoveredTranscripts));
+        cards.push(skillsWriter.createTranscriptsCard(mockListOfTranscriptsWithAppearsAtForPlaybackFiles, 5)); // for timeline total playtime seconds of file also needs to be passed.
 
-        //
-
-        // the title of the default faces cards is being changed to 'Logos'. Card title can be changed for any type of cards.
-        const logosJSON = await skillsWriter.createFacesCard(
-            [
-                {
-                    text: `if image doesn't load this text is shown`,
-                    image_url: 'https://seeklogo.com/images/B/box-logo-646A3D8C91-seeklogo.com.png'
-                }
-            ],
-            null,
-            'Logos'
-        );
-
-        // this will override any existing pending or error status cards in the UI, with actual topic, transcript and faces cards, for that file version.
-        skillsWriter.saveDataCards([topicJSON, transcriptJSON, logosJSON]);
+        // Save the cards to Box in a single calls to show in UI.
+        // Incase the skill is invoked on a new version upload of the same file,
+        // this call will override any existing skills cards, data or error, on Box file preview.
+        console.log(`cardss ${cards}`);
+        await skillsWriter.saveDataCards(cards);
     } catch (error) {
-        console.error(`Skill processing failed for file: ${fileContext.fileId} with error: ${error}`); // eslint-disable-line no-console
-
-        // a developer may want to inspect the 'error' variable and write back more specific errorCodes here.
-        skillsWriter.saveErrorStatusCard(skillsWriter.error.UNKNOWN);
+        // Incase of error, write back an error card to UI.
+        // Note: Skill developers may want to inspect the 'error' variable
+        // and write back more specific errorCodes (@print SkillsWriter.error.keys())
+        console.error(`Skill processing failed for file: ${filesReader.getFileContext().fileId} with error: ${error}`);
+        await skillsWriter.saveErrorCard(skillsWriter.error.UNKNOWN);
     } finally {
-        // skills engine requires a 200 response within 10 seconds of sending an event.
+        // Skills engine requires a 200 response within 10 seconds of sending an event.
+        // Please see different code architecture configurations in git docs,
+        // that you can apply to make sure your service always responds within time.
         callback(null, { statusCode: 200, body: 'Box event was processed by skill' });
     }
 };

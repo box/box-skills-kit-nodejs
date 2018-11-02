@@ -18,6 +18,7 @@ const urlPath = require('box-node-sdk/lib/util/url-path');
 const path = require('path');
 const trimStart = require('lodash/trimStart');
 const jimp = require('jimp');
+const urlTemplate = require('url-template');
 
 /* Constant values for writing cards to skill_invocations service */
 const BASE_PATH = '/skill_invocations'; // Base path for all files endpoints
@@ -33,10 +34,10 @@ const sdk = new BoxSDK({
 const BOX_API_ENDPOINT = 'https://api.box.com/2.0';
 const MB_INTO_BYTES = 1048576;
 const FileType = {
-    AUDIO: 'AUDIO',
-    VIDEO: 'VIDEO',
-    IMAGE: 'IMAGE',
-    DOCUMENT: 'DOCUMENT'
+    AUDIO: { name: 'AUDIO', representationType: '[mp3]' },
+    VIDEO: { name: 'VIDEO', representationType: '[mp4]' },
+    IMAGE: { name: 'IMAGE', representationType: '[jpg?dimensions=320x320]' },
+    DOCUMENT: { name: 'DOCUMENT', representationType: '[extracted_text]' }
 };
 
 const boxVideoFormats = ['3g2', '3gp', 'avi', 'flv', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg'];
@@ -44,15 +45,15 @@ boxVideoFormats.push('mpg', 'ogg', 'mts', 'qt', 'ts', 'wmv');
 const boxAudioFormats = ['aac', 'aif', 'aifc', 'aiff', 'amr', 'au', 'flac', 'm4a', 'mp3', 'ra', 'wav', 'wma'];
 const boxDocumentFormats = ['pdf'];
 
-const getFileFormat = (fileName) => {
+const getFileFormat = fileName => {
     const fileExtension = path.extname(fileName);
     return trimStart(fileExtension, '.');
 };
-const getFileType = (fileFormat) => {
-    if (boxAudioFormats.includes(fileFormat)) return FileType.AUDIO;
-    else if (boxDocumentFormats.includes(fileFormat)) return FileType.DOCUMENT;
-    else if (boxVideoFormats.includes(fileFormat)) return FileType.VIDEO;
-    return FileType.IMAGE;
+const getFileType = fileFormat => {
+    if (boxAudioFormats.includes(fileFormat)) return FileType.AUDIO.name;
+    else if (boxDocumentFormats.includes(fileFormat)) return FileType.DOCUMENT.name;
+    else if (boxVideoFormats.includes(fileFormat)) return FileType.VIDEO.name;
+    return FileType.IMAGE.name;
 };
 /**
  * FilesReader :- A helpful client to capture file related information from
@@ -88,6 +89,7 @@ function FilesReader(body) {
     this.fileReadToken = eventBody.token.read.access_token;
     this.fileWriteToken = eventBody.token.write.access_token;
     this.fileReadClient = sdk.getBasicClient(this.fileReadToken);
+    this.fileDownloadURL = `${BOX_API_ENDPOINT}/files/${this.fileId}/content?access_token=${this.fileReadToken}`;
 }
 
 /**
@@ -117,23 +119,52 @@ function SkillsWriter(fileContext) {
  * @param  {Object} stream - read stream
  * @return Promise - resolves to the string of information read from the stream
  */
-const readStreamToString = (stream) => {
+const readStreamToString = stream => {
     if (!stream || typeof stream !== 'object') {
         throw new TypeError('Invalid Stream, must be a readable stream.');
     }
     return new Promise((resolve, reject) => {
         const chunks = [];
-        stream.on('data', (chunk) => {
+        stream.on('data', chunk => {
             chunks.push(chunk);
         });
-        stream.on('error', (err) => {
+        stream.on('error', err => {
             reject(err);
         });
         stream.on('end', () => {
-            resolve(Buffer.concat(chunks).toString('utf8'));
+            resolve(Buffer.concat(chunks).toString('base64'));
         });
     });
 };
+
+/**
+ * Poll the representation info URL until representation is generated,
+ * then return content URL template.
+ * @param {BoxClient} client The client to use for making API calls
+ * @param {string} infoURL The URL to use for getting representation info
+ * @returns {Promise<string>} A promise resolving to the content URL template
+ */
+function pollRepresentationInfo(infoURL) {
+    return this.fileReadClient.get(infoURL).then(response => {
+        if (response.statusCode !== 200) {
+            throw errors.buildUnexpectedResponseError(response);
+        }
+
+        var info = response.body;
+
+        switch (info.status.state) {
+            case 'success':
+            case 'viewable':
+            case 'error':
+                return info;
+            case 'none':
+            case 'pending':
+                return Promise.delay(1000).then(() => pollRepresentationInfo(client, infoURL));
+            default:
+                throw new Error(`Unknown representation status: ${info.status.state}`);
+        }
+    });
+}
 
 /** FilesReader public functions */
 
@@ -142,14 +173,13 @@ const readStreamToString = (stream) => {
  * fileReadToken, fileWriteToken, skillId, requestId for use in code.
  */
 FilesReader.prototype.getFileContext = function getFileContext() {
-    const fileDownloadURL = `${BOX_API_ENDPOINT}/files/${this.fileId}/content?access_token=${this.fileReadToken}`;
     return {
         requestId: this.requestId,
         skillId: this.skillId,
         fileId: this.fileId,
         fileName: this.fileName,
         fileSize: this.fileSize,
-        fileDownloadURL,
+        fileDownloadURL: this.fileDownloadURL,
         fileReadToken: this.fileReadToken,
         fileWriteToken: this.fileWriteToken
     };
@@ -196,13 +226,13 @@ FilesReader.prototype.getContentStream = function getContentStream() {
 FilesReader.prototype.getContentBase64 = function getContentBase64() {
     return new Promise((resolve, reject) => {
         this.getContentStream()
-            .then((stream) => {
+            .then(stream => {
                 resolve(readStreamToString(stream));
             })
-            .then((content) => {
+            .then(content => {
                 resolve(content);
             })
-            .catch((e) => {
+            .catch(e => {
                 reject(e);
             });
     });
@@ -212,31 +242,55 @@ FilesReader.prototype.getContentBase64 = function getContentBase64() {
  * Same as FilesReader.getFileContext().fileDownloadURL but in BasicFormat
  */
 FilesReader.prototype.getBasicFormatFileURL = function getBasicFormatFileURL() {
-    let representationType = '[jpg?dimensions=1024x1024]';
-    if (this.fileType === FileType.AUDIO) representationType = '[mp3]';
-    else if (this.fileType === FileType.VIDEO) representationType = '[mp4]';
-    else if (this.fileType === FileType.DOCUMENT) representationType = '[pdf]';
-    return new Promise((resolve, reject) => {
-        this.fileReadClient.files
-            .getRepresentationInfo(this.fileId, representationType)
-            .then((response) => {
-                resolve(`${response.entries[0].info.url}?access_token=${this.fileReadToken}`);
-            })
-            .catch((e) => {
-                reject(e);
-            });
-    });
+    options = { assetPath: '' };
+
+    return this.fileReadClient.files
+        .getRepresentationInfo(this.fileId, FileType[this.fileType].representationType)
+        .then(reps => {
+            var repInfo = reps.entries.pop();
+            if (!repInfo) {
+                throw new Error('Could not get information for requested representation');
+            }
+
+            switch (repInfo.status.state) {
+                case 'success':
+                case 'viewable':
+                    return repInfo.content.url_template;
+                case 'error':
+                    throw new Error('Representation had error status');
+                case 'none':
+                case 'pending':
+                    return pollRepresentationInfo(this.fileReadClient, repInfo.info.url).then(info => {
+                        if (info.status.state === 'error') {
+                            throw new Error('Representation had error status');
+                        }
+                        return info.content.url_template;
+                    });
+                default:
+                    throw new Error(`Unknown representation status: ${repInfo.status.state}`);
+            }
+        })
+        .then(assetURLTemplate => {
+            return `${urlTemplate.parse(assetURLTemplate).expand({ asset_path: options.assetPath })}?access_token=${
+                this.fileReadToken
+            }`;
+        });
 };
 
 /**
  * Same as FilesReader.getFileContext().getContentStream() but in BasicFormat
  */
 FilesReader.prototype.getBasicFormatContentStream = function getBasicFormatContentStream() {
-    const downloadStreamOptions = {
-        streaming: true,
-        headers: {}
-    };
-    this.fileReadClient.get(this.getBasicFormatFileURL(), downloadStreamOptions);
+    return this.fileReadClient.files
+        .getRepresentationContent(this.fileId, FileType[this.fileType].representationType)
+        .catch(e => {
+            if (e.statusCode === 401) {
+                throw new TypeError(
+                    'The client provided is unauthorized. Client should have read access to the file passed'
+                );
+            }
+            throw e;
+        });
 };
 
 /*
@@ -245,13 +299,13 @@ FilesReader.prototype.getBasicFormatContentStream = function getBasicFormatConte
 FilesReader.prototype.getBasicFormatContentBase64 = function getBasicFormatContentBase64() {
     return new Promise((resolve, reject) => {
         this.getBasicFormatContentStream()
-            .then((stream) => {
+            .then(stream => {
                 resolve(readStreamToString(stream));
             })
-            .then((content) => {
+            .then(content => {
                 resolve(content);
             })
-            .catch((e) => {
+            .catch(e => {
                 reject(e);
             });
     });
@@ -335,11 +389,17 @@ SkillsWriter.prototype.error = {
  * validates if Enum value passed exists in the enums
  */
 const validateEnum = (inputValue, enumName) => {
-    for (const value in Object.values(enumName)) {
-        if (value === inputValue) return true;
+    for (const key in enumName) {
+        if (enumName[key] === inputValue) return true;
     }
     return false;
 };
+
+/**
+ * Validates if usage object is of allowed format: { unit: <usageUnit>, value: <Integer> }
+ */
+const validateUsage = usage =>
+    usage && usage.unit && usage.value && validateEnum(usage.unit, usageUnit) && Number.isInteger(usage.value);
 
 /**
  * Private function to validate and update card template data to have expected fields
@@ -431,7 +491,7 @@ SkillsWriter.prototype.createTopicsCard = function createTopicsCard(
     optionalFileDuration,
     optionalCardTitle
 ) {
-    topicsDataList.forEach((topic) => processCardData(topic, optionalFileDuration));
+    topicsDataList.forEach(topic => processCardData(topic, optionalFileDuration));
     return this.createMetadataCard(
         cardType.TOPIC,
         optionalCardTitle || cardTitle.TOPIC,
@@ -446,7 +506,7 @@ SkillsWriter.prototype.createTranscriptsCard = function createTranscriptsCard(
     optionalFileDuration,
     optionalCardTitle
 ) {
-    transcriptsDataList.forEach((transcript) => processCardData(transcript, optionalFileDuration));
+    transcriptsDataList.forEach(transcript => processCardData(transcript, optionalFileDuration));
     return this.createMetadataCard(
         cardType.TRANSCRIPT,
         optionalCardTitle || cardTitle.TRANSCRIPT,
@@ -461,7 +521,7 @@ SkillsWriter.prototype.createFacesCard = function createFacesCard(
     optionalFileDuration,
     optionalCardTitle
 ) {
-    facesDataList.forEach((face) => processCardData(face, optionalFileDuration));
+    facesDataList.forEach(face => processCardData(face, optionalFileDuration));
     const cards = this.createMetadataCard(
         cardType.FACES,
         optionalCardTitle || cardTitle.FACES,
@@ -475,7 +535,7 @@ SkillsWriter.prototype.createFacesCard = function createFacesCard(
         dataURIPromises.push(
             jimp
                 .read(facesDataList[i].image_url)
-                .then((image) => {
+                .then(image => {
                     // resize the image to be thumbnail size
                     return image.resize(45, 45).getBase64Async(jimp.MIME_PNG);
                 })
@@ -489,14 +549,13 @@ SkillsWriter.prototype.createFacesCard = function createFacesCard(
 
     return new Promise((resolve, reject) => {
         Promise.all(dataURIPromises)
-            .then((dataURIs) => {
+            .then(dataURIs => {
                 for (let i = 0; i < facesDataList.length; i++) {
-                    // facesDataList[i].type = 'image';
                     facesDataList[i].image_url = dataURIs[i] || facesDataList[i].image_url;
                 }
                 resolve(cards);
             })
-            .catch((error) => {
+            .catch(error => {
                 reject(error);
             });
     });
@@ -508,7 +567,7 @@ SkillsWriter.prototype.createFacesCard = function createFacesCard(
  * You can pass an optionalCallback function to print or log success in your code once the
  * card has been saved.
  */
-SkillsWriter.prototype.savePendingStatusCard = function savePendingStatusCard(optionalCallback) {
+SkillsWriter.prototype.saveProcessingCard = function saveProcessingCard(optionalCallback) {
     const status = {
         code: 'skills_pending_status',
         message: "We're preparing to process your file. Please hold on!"
@@ -523,17 +582,12 @@ SkillsWriter.prototype.savePendingStatusCard = function savePendingStatusCard(op
  *  per the default message with each code, unless 'optionMessage' is provided. You can pass an
  *  optionalCallback function to print or log success in your code once the card has been saved.
  */
-SkillsWriter.prototype.saveErrorStatusCard = function saveErrorStatusCard(
-    error,
-    optionalCustomMessage,
-    optionalCallback,
-    optionalFailureType
-) {
-    const failureType = validateEnum(optionalFailureType, skillInvocationStatus)
-        ? optionalFailureType
-        : skillInvocationStatus.PERMANENT_FAILURE;
+SkillsWriter.prototype.saveErrorCard = function saveErrorCard(error, optionalCallback, optionalFailureType) {
+    const failureType =
+        optionalFailureType === skillInvocationStatus.TRANSIENT_FAILURE
+            ? optionalFailureType
+            : skillInvocationStatus.PERMANENT_FAILURE;
     const errorJSON = validateEnum(error, this.error) ? error : this.error.UNKNOWN;
-    if (optionalCustomMessage) errorJSON.message = optionalCustomMessage;
     const errorCard = this.createMetadataCard(cardType.STATUS, cardTitle.ERROR, errorJSON);
     return this.saveDataCards([errorCard], optionalCallback, failureType);
 };
@@ -550,6 +604,8 @@ SkillsWriter.prototype.saveDataCards = function saveDataCards(
     optionalUsage
 ) {
     const status = validateEnum(optionalStatus, skillInvocationStatus) ? optionalStatus : skillInvocationStatus.SUCCESS;
+    const usage = validateUsage(optionalUsage) ? optionalUsage : DEFAULT_USAGE;
+
     // create skill_invocations body
     const body = {
         status,
@@ -560,9 +616,8 @@ SkillsWriter.prototype.saveDataCards = function saveDataCards(
         metadata: {
             cards: listofDataCardJSONs
         },
-        usage: DEFAULT_USAGE
+        usage
     };
-
     return putData(this.fileWriteClient, this.skillId, body, optionalCallback);
 };
 
