@@ -242,7 +242,7 @@ FilesReader.prototype.getContentBase64 = function getContentBase64() {
  * Same as FilesReader.getFileContext().fileDownloadURL but in BasicFormat
  */
 FilesReader.prototype.getBasicFormatFileURL = function getBasicFormatFileURL() {
-    options = { assetPath: '' };
+    const options = { assetPath: '' };
 
     return this.fileReadClient.files
         .getRepresentationInfo(this.fileId, FileType[this.fileType].representationType)
