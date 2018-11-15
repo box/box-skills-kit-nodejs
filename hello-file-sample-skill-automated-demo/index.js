@@ -16,7 +16,7 @@ module.exports.handler = async (event, context, callback) => {
     try {
         // One of six ways of accessing file content from Box for ML processing with FilesReader
         // ML processing code not shown here, and will need to be added by the skill developer.
-        // ( see a quick sample of ML call for a skill here: https://www.diffchecker.com/MvOs9xow )
+        // ( see a quick sample of ML call for a skill here: https://www.diffchecker.com/GI5laFrU )
         const base64File = await filesReader.getBasicFormatContentBase64(); // eslint-disable-line no-unused-vars
         console.log(`printing simplified format file content in base64 encoding: ${base64File}`);
 
