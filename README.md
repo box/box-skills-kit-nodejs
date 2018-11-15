@@ -45,14 +45,14 @@ Note: BasicFormat functions allows you to access files stored in Box in another 
  ## Error Enum
  Possible error messages to display in an ErrorStatus card.
  
-| Functions                                      | Description                                                                                             |
+| Functions                                      | Shows error card in UI with message                                                                                             |
 |------------------------------------------------|---------------------------------------------------------------------------------------------------------|
-| SkillsErrorEnum.FILE_PROCESSING_ERROR   | Shows card: "We're sorry, something went wrong with processing the file."                               |
-| SkillsErrorEnum.INVALID_FILE_SIZE       | Shows card: "Something went wrong with processing the file. This file size is currently not supported." |
-| SkillsErrorEnum.INVALID_FILE_FORMAT     | Shows card: "Something went wrong with processing the file. Invalid information received."              |
-| SkillsErrorEnum.INVALID_EVENT           | Shows card: "Something went wrong with processing the file. Invalid information received."              |
-| SkillsErrorEnum.NO_INFO_FOUND           | Shows card: "We're sorry, no skills information was found."                                             |
-| SkillsErrorEnum.INVOCATIONS_ERROR       | Shows card: "Something went wrong with running this skill or fetching its data."                        |
-| SkillsErrorEnum.EXTERNAL_AUTH_ERROR | Shows card: "Something went wrong with running this skill or fetching its data."                        |
-| SkillsErrorEnum.BILLING_ERROR       | Shows card: "Something went wrong with running this skill or fetching its data."                        |
-| SkillsErrorEnum.UNKNOWN             | Shows card: "Something went wrong with running this skill or fetching its data."                        |
+| SkillsErrorEnum.FILE_PROCESSING_ERROR   | "We're sorry, something went wrong with processing the file."                               |
+| SkillsErrorEnum.INVALID_FILE_SIZE       | "Something went wrong with processing the file. This file size is currently not supported." |
+| SkillsErrorEnum.INVALID_FILE_FORMAT     | "Something went wrong with processing the file. Invalid information received."              |
+| SkillsErrorEnum.INVALID_EVENT           | "Something went wrong with processing the file. Invalid information received."              |
+| SkillsErrorEnum.NO_INFO_FOUND           | "We're sorry, no skills information was found."                                             |
+| SkillsErrorEnum.INVOCATIONS_ERROR       | "Something went wrong with running this skill or fetching its data."                        |
+| SkillsErrorEnum.EXTERNAL_AUTH_ERROR | "Something went wrong with running this skill or fetching its data."                        |
+| SkillsErrorEnum.BILLING_ERROR       | "Something went wrong with running this skill or fetching its data."                        |
+| SkillsErrorEnum.UNKNOWN             | "Something went wrong with running this skill or fetching its data."                        |
