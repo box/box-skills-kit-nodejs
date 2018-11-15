@@ -36,25 +36,75 @@ const MB_INTO_BYTES = 1048576;
 const FileType = {
     AUDIO: { name: 'AUDIO', representationType: '[mp3]' },
     VIDEO: { name: 'VIDEO', representationType: '[mp4]' },
-    IMAGE: { name: 'IMAGE', representationType: '[jpg?dimensions=320x320]' },
+    IMAGE: { name: 'IMAGE', representationType: '[jpg?dimensions=1024x1024]' },
     DOCUMENT: { name: 'DOCUMENT', representationType: '[extracted_text]' }
 };
 
-const boxVideoFormats = ['3g2', '3gp', 'avi', 'flv', 'm2v', 'm2ts', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg'];
-boxVideoFormats.push('mpg', 'ogg', 'mts', 'qt', 'ts', 'wmv');
+const boxVideoFormats = [
+    '3g2',
+    '3gp',
+    'avi',
+    'flv',
+    'm2v',
+    'm2ts',
+    'm4v',
+    'mkv',
+    'mov',
+    'mp4',
+    'mpeg',
+    'mpg',
+    'ogg',
+    'mts',
+    'qt',
+    'ts',
+    'wmv'
+];
 const boxAudioFormats = ['aac', 'aif', 'aifc', 'aiff', 'amr', 'au', 'flac', 'm4a', 'mp3', 'ra', 'wav', 'wma'];
-const boxDocumentFormats = ['pdf'];
+const boxImageFormats = [
+    'ai',
+    'bmp',
+    'gif',
+    'eps',
+    'heic',
+    'jpeg',
+    'jpg',
+    'png',
+    'ps',
+    'psd',
+    'svg',
+    'tif',
+    'tiff',
+    'dcm',
+    'dicm',
+    'dicom',
+    'svs',
+    'tga'
+];
 
-const getFileFormat = fileName => {
-    const fileExtension = path.extname(fileName);
+const getFileFormat = function getFileFormat(fileName) {
+    const fileExtension = path.extname(fileName).toLowerCase();
     return trimStart(fileExtension, '.');
 };
-const getFileType = fileFormat => {
+const getFileType = function getFileType(fileFormat) {
     if (boxAudioFormats.includes(fileFormat)) return FileType.AUDIO.name;
-    else if (boxDocumentFormats.includes(fileFormat)) return FileType.DOCUMENT.name;
+    else if (boxImageFormats.includes(fileFormat)) return FileType.IMAGE.name;
     else if (boxVideoFormats.includes(fileFormat)) return FileType.VIDEO.name;
-    return FileType.IMAGE.name;
+    return FileType.DOCUMENT.name;
 };
+
+/** public enums */
+const SkillsErrorEnum = {
+    FILE_PROCESSING_ERROR: 'skills_file_processing_error',
+    INVALID_FILE_SIZE: 'skills_invalid_file_size_error',
+    INVALID_FILE_FORMAT: 'skills_invalid_file_format_error',
+    INVALID_EVENT: 'skills_invalid_event_error',
+    NO_INFO_FOUND: 'skills_no_info_found',
+    INVOCATIONS_ERROR: 'skills_invocations_error',
+    EXTERNAL_AUTH_ERROR: 'skills_external_auth_error.',
+    BILLING_ERROR: 'skills_billing_error',
+    UNKNOWN: 'skills_unknown_error'
+};
+
 /**
  * FilesReader :- A helpful client to capture file related information from
  * incoming Box Skills event  and to access the file's content.
@@ -101,8 +151,8 @@ function FilesReader(body) {
  * SkillsWriter.createTopicsCard ( topicsDataList, optionalFileDuration, optionalCardTitle ) : DataCard json
  * SkillsWriter.createTranscriptsCard ( transcriptsDataList, optionalFileDuration, optionalCardTitle ): DataCard json
  * async SkillsWriter.createFacesCard ( facesDataList, optionalFileDuration, optionalCardTitle ) : DataCard json
- * async SkillsWriter.savePendingStatusCard ( optionalCallback ) : null
- * async SkillsWriter.saveErrorStatusCard ( error, optionalCustomMessage, optionalCallback ): null
+ * async SkillsWriter.saveProcessingCard ( optionalCallback ) : null
+ * async SkillsWriter.saveErrorCard ( error, optionalCustomMessage, optionalCallback ): null
  * async SkillsWriter.saveDataCards ( listofDataCardJSONs, optionalCallback): null
  */
 function SkillsWriter(fileContext) {
@@ -119,16 +169,16 @@ function SkillsWriter(fileContext) {
  * @param  {Object} stream - read stream
  * @return Promise - resolves to the string of information read from the stream
  */
-const readStreamToString = stream => {
+const readStreamToString = function readStreamToString(stream) {
     if (!stream || typeof stream !== 'object') {
         throw new TypeError('Invalid Stream, must be a readable stream.');
     }
     return new Promise((resolve, reject) => {
         const chunks = [];
-        stream.on('data', chunk => {
+        stream.on('data', (chunk) => {
             chunks.push(chunk);
         });
-        stream.on('error', err => {
+        stream.on('error', (err) => {
             reject(err);
         });
         stream.on('end', () => {
@@ -144,14 +194,12 @@ const readStreamToString = stream => {
  * @param {string} infoURL The URL to use for getting representation info
  * @returns {Promise<string>} A promise resolving to the content URL template
  */
-function pollRepresentationInfo(infoURL) {
-    return this.fileReadClient.get(infoURL).then(response => {
+function pollRepresentationInfo(client, infoURL) {
+    return this.fileReadClient.get(infoURL).then((response) => {
         if (response.statusCode !== 200) {
-            throw errors.buildUnexpectedResponseError(response);
+            console.error(`Unexpected response ${response}`);
         }
-
-        var info = response.body;
-
+        const info = response.body;
         switch (info.status.state) {
             case 'success':
             case 'viewable':
@@ -161,7 +209,8 @@ function pollRepresentationInfo(infoURL) {
             case 'pending':
                 return Promise.delay(1000).then(() => pollRepresentationInfo(client, infoURL));
             default:
-                throw new Error(`Unknown representation status: ${info.status.state}`);
+                console.error(`Unknown representation status: ${info.status.state}`);
+                throw new Error(SkillsErrorEnum.FILE_PROCESSING_ERROR);
         }
     });
 }
@@ -179,6 +228,8 @@ FilesReader.prototype.getFileContext = function getFileContext() {
         fileId: this.fileId,
         fileName: this.fileName,
         fileSize: this.fileSize,
+        fileFormat: this.fileFormat,
+        fileType: this.fileType,
         fileDownloadURL: this.fileDownloadURL,
         fileReadToken: this.fileReadToken,
         fileWriteToken: this.fileWriteToken
@@ -190,9 +241,9 @@ FilesReader.prototype.getFileContext = function getFileContext() {
  * skill as per the list of allowed formats.
  */
 FilesReader.prototype.validateFormat = function validateFormat(allowedFileFormatsList) {
-    const fileFormat = getFileFormat;
-    if (allowedFileFormatsList.includes(fileFormat)) return true;
-    throw new Error(`File format ${fileFormat} is not accepted by this skill`);
+    if (allowedFileFormatsList.includes(this.fileFormat)) return true;
+    console.error(`File format ${this.fileFormat} is not accepted by this skill`);
+    throw new Error(SkillsErrorEnum.INVALID_FILE_FORMAT);
 };
 
 /**
@@ -201,7 +252,8 @@ FilesReader.prototype.validateFormat = function validateFormat(allowedFileFormat
 FilesReader.prototype.validateSize = function validateSize(allowedMegabytesNum) {
     const fileSizeMB = this.fileSize / MB_INTO_BYTES;
     if (fileSizeMB <= allowedMegabytesNum) return true;
-    throw new Error(`File size ${fileSizeMB} MB is over accepted limit of ${allowedMegabytesNum} MB`);
+    console.error(`File size ${fileSizeMB} MB is over accepted limit of ${allowedMegabytesNum} MB`);
+    throw new Error(SkillsErrorEnum.INVALID_FILE_SIZE);
 };
 
 /**
@@ -226,13 +278,13 @@ FilesReader.prototype.getContentStream = function getContentStream() {
 FilesReader.prototype.getContentBase64 = function getContentBase64() {
     return new Promise((resolve, reject) => {
         this.getContentStream()
-            .then(stream => {
+            .then((stream) => {
                 resolve(readStreamToString(stream));
             })
-            .then(content => {
+            .then((content) => {
                 resolve(content);
             })
-            .catch(e => {
+            .catch((e) => {
                 reject(e);
             });
     });
@@ -246,10 +298,11 @@ FilesReader.prototype.getBasicFormatFileURL = function getBasicFormatFileURL() {
 
     return this.fileReadClient.files
         .getRepresentationInfo(this.fileId, FileType[this.fileType].representationType)
-        .then(reps => {
-            var repInfo = reps.entries.pop();
+        .then((reps) => {
+            const repInfo = reps.entries.pop();
             if (!repInfo) {
-                throw new Error('Could not get information for requested representation');
+                console.error('Could not get information for requested representation');
+                throw new Error(SkillsErrorEnum.FILE_PROCESSING_ERROR);
             }
 
             switch (repInfo.status.state) {
@@ -257,24 +310,28 @@ FilesReader.prototype.getBasicFormatFileURL = function getBasicFormatFileURL() {
                 case 'viewable':
                     return repInfo.content.url_template;
                 case 'error':
-                    throw new Error('Representation had error status');
+                    console.error('Representation had error status');
+                    throw new Error(SkillsErrorEnum.FILE_PROCESSING_ERROR);
                 case 'none':
                 case 'pending':
-                    return pollRepresentationInfo(this.fileReadClient, repInfo.info.url).then(info => {
+                    return pollRepresentationInfo(this.fileReadClient, repInfo.info.url).then((info) => {
                         if (info.status.state === 'error') {
-                            throw new Error('Representation had error status');
+                            console.error('Representation had error status');
+                            throw new Error(SkillsErrorEnum.FILE_PROCESSING_ERROR);
                         }
                         return info.content.url_template;
                     });
                 default:
-                    throw new Error(`Unknown representation status: ${repInfo.status.state}`);
+                    console.error(`Unknown representation status: ${repInfo.status.state}`);
+                    throw new Error(SkillsErrorEnum.FILE_PROCESSING_ERROR);
             }
         })
-        .then(assetURLTemplate => {
-            return `${urlTemplate.parse(assetURLTemplate).expand({ asset_path: options.assetPath })}?access_token=${
-                this.fileReadToken
-            }`;
-        });
+        .then(
+            (assetURLTemplate) =>
+                `${urlTemplate.parse(assetURLTemplate).expand({ asset_path: options.assetPath })}?access_token=${
+                    this.fileReadToken
+                }`
+        );
 };
 
 /**
@@ -283,7 +340,7 @@ FilesReader.prototype.getBasicFormatFileURL = function getBasicFormatFileURL() {
 FilesReader.prototype.getBasicFormatContentStream = function getBasicFormatContentStream() {
     return this.fileReadClient.files
         .getRepresentationContent(this.fileId, FileType[this.fileType].representationType)
-        .catch(e => {
+        .catch((e) => {
             if (e.statusCode === 401) {
                 throw new TypeError(
                     'The client provided is unauthorized. Client should have read access to the file passed'
@@ -299,13 +356,13 @@ FilesReader.prototype.getBasicFormatContentStream = function getBasicFormatConte
 FilesReader.prototype.getBasicFormatContentBase64 = function getBasicFormatContentBase64() {
     return new Promise((resolve, reject) => {
         this.getBasicFormatContentStream()
-            .then(stream => {
+            .then((stream) => {
                 resolve(readStreamToString(stream));
             })
-            .then(content => {
+            .then((content) => {
                 resolve(content);
             })
-            .catch(e => {
+            .catch((e) => {
                 reject(e);
             });
     });
@@ -343,52 +400,12 @@ const skillInvocationStatus = {
     SUCCESS: 'success'
 };
 
-/** SkillsWriter public enums */
-SkillsWriter.prototype.error = {
-    FILE_PROCESSING_ERROR: {
-        code: 'skills_file_processing_error',
-        message: "We're sorry, something went wrong with processing the file."
-    },
-    INVALID_FILE_SIZE: {
-        code: 'skills_invalid_file_size_error',
-        message: 'Something went wrong with processing the file. This file size is currently not supported.'
-    },
-    INVALID_FILE_FORMAT: {
-        code: 'skills_invalid_file_format_error',
-        message: 'Something went wrong with processing the file. Invalid information received.'
-    },
-    INVALID_EVENT: {
-        code: 'skills_invalid_event_error',
-        message: 'Something went wrong with processing the file. Invalid information received.'
-    },
-    NO_INFO_FOUND: {
-        code: 'skills_no_info_found_error',
-        message: "We're sorry, no skills information was found."
-    },
-    INVOCATIONS_ERROR: {
-        code: 'skills_invocations_error',
-        message: 'Something went wrong with running this skill or fetching its data.'
-    },
-    EXTERNAL_AUTH_ERROR: {
-        code: 'skills_external_auth_error',
-        message: 'Something went wrong with running this skill or fetching its data.'
-    },
-    BILLING_ERROR: {
-        code: 'skills_billing_error',
-        message: 'Something went wrong with running this skill or fetching its data.'
-    },
-    UNKNOWN: {
-        code: 'skills_unknown_error',
-        message: 'Something went wrong with running this skill or fetching its data.'
-    }
-};
-
 /** SkillsWriter private functions */
 
 /**
  * validates if Enum value passed exists in the enums
  */
-const validateEnum = (inputValue, enumName) => {
+const validateEnum = function validateEnum(inputValue, enumName) {
     for (const key in enumName) {
         if (enumName[key] === inputValue) return true;
     }
@@ -398,13 +415,14 @@ const validateEnum = (inputValue, enumName) => {
 /**
  * Validates if usage object is of allowed format: { unit: <usageUnit>, value: <Integer> }
  */
-const validateUsage = usage =>
-    usage && usage.unit && usage.value && validateEnum(usage.unit, usageUnit) && Number.isInteger(usage.value);
+const validateUsage = function validateUsage(usage) {
+    return usage && validateEnum(usage.unit, usageUnit) && Number.isInteger(usage.value);
+};
 
 /**
  * Private function to validate and update card template data to have expected fields
  */
-const processCardData = (cardData, duration) => {
+const processCardData = function processCardData(cardData, duration) {
     if (!cardData.text) throw new TypeError(`Missing required 'text' field in ${JSON.stringify(cardData)}`);
     cardData.type = typeof cardData.image_url === 'string' ? 'image' : 'text';
     if (duration && !(Array.isArray(cardData.appears) && cardData.appears.length > 0)) {
@@ -472,7 +490,7 @@ SkillsWriter.prototype.createMetadataCard = function createMetadataCard(
  * @param {Function} callback   (optional) called with updated metadata if successful
  * @return {Promise<Object>}    promise resolving to the updated metadata
  */
-const putData = (client, skillId, body, callback) => {
+const putData = function putData(client, skillId, body, callback) {
     const apiPath = urlPath(BASE_PATH, skillId);
     const params = {
         body,
@@ -491,7 +509,7 @@ SkillsWriter.prototype.createTopicsCard = function createTopicsCard(
     optionalFileDuration,
     optionalCardTitle
 ) {
-    topicsDataList.forEach(topic => processCardData(topic, optionalFileDuration));
+    topicsDataList.forEach((topic) => processCardData(topic, optionalFileDuration));
     return this.createMetadataCard(
         cardType.TOPIC,
         optionalCardTitle || cardTitle.TOPIC,
@@ -506,7 +524,7 @@ SkillsWriter.prototype.createTranscriptsCard = function createTranscriptsCard(
     optionalFileDuration,
     optionalCardTitle
 ) {
-    transcriptsDataList.forEach(transcript => processCardData(transcript, optionalFileDuration));
+    transcriptsDataList.forEach((transcript) => processCardData(transcript, optionalFileDuration));
     return this.createMetadataCard(
         cardType.TRANSCRIPT,
         optionalCardTitle || cardTitle.TRANSCRIPT,
@@ -521,7 +539,7 @@ SkillsWriter.prototype.createFacesCard = function createFacesCard(
     optionalFileDuration,
     optionalCardTitle
 ) {
-    facesDataList.forEach(face => processCardData(face, optionalFileDuration));
+    facesDataList.forEach((face) => processCardData(face, optionalFileDuration));
     const cards = this.createMetadataCard(
         cardType.FACES,
         optionalCardTitle || cardTitle.FACES,
@@ -535,10 +553,10 @@ SkillsWriter.prototype.createFacesCard = function createFacesCard(
         dataURIPromises.push(
             jimp
                 .read(facesDataList[i].image_url)
-                .then(image => {
+                .then((image) =>
                     // resize the image to be thumbnail size
-                    return image.resize(45, 45).getBase64Async(jimp.MIME_PNG);
-                })
+                    image.resize(45, 45).getBase64Async(jimp.MIME_PNG)
+                )
                 // promise.all rejects if one of the promises in the array gets rejected,
                 // without considering whether or not the other promises have resolved.
                 // This is to make sure Promise.all continues evluating all promises inspite some rejections.
@@ -549,13 +567,13 @@ SkillsWriter.prototype.createFacesCard = function createFacesCard(
 
     return new Promise((resolve, reject) => {
         Promise.all(dataURIPromises)
-            .then(dataURIs => {
+            .then((dataURIs) => {
                 for (let i = 0; i < facesDataList.length; i++) {
                     facesDataList[i].image_url = dataURIs[i] || facesDataList[i].image_url;
                 }
                 resolve(cards);
             })
-            .catch(error => {
+            .catch((error) => {
                 reject(error);
             });
     });
@@ -582,13 +600,22 @@ SkillsWriter.prototype.saveProcessingCard = function saveProcessingCard(optional
  *  per the default message with each code, unless 'optionMessage' is provided. You can pass an
  *  optionalCallback function to print or log success in your code once the card has been saved.
  */
-SkillsWriter.prototype.saveErrorCard = function saveErrorCard(error, optionalCallback, optionalFailureType) {
+SkillsWriter.prototype.saveErrorCard = function saveErrorCard(
+    error,
+    optionalCustomErrorMessage,
+    optionalCallback,
+    optionalFailureType
+) {
     const failureType =
         optionalFailureType === skillInvocationStatus.TRANSIENT_FAILURE
             ? optionalFailureType
             : skillInvocationStatus.PERMANENT_FAILURE;
-    const errorJSON = validateEnum(error, this.error) ? error : this.error.UNKNOWN;
-    const errorCard = this.createMetadataCard(cardType.STATUS, cardTitle.ERROR, errorJSON);
+    const errorCode = validateEnum(error, SkillsErrorEnum) ? error : SkillsErrorEnum.UNKNOWN;
+    let errorObj = { code: errorCode };
+    if (optionalCustomErrorMessage) {
+        errorObj = { code: 'custom_error', message: optionalCustomErrorMessage };
+    }
+    const errorCard = this.createMetadataCard(cardType.STATUS, cardTitle.ERROR, errorObj);
     return this.saveDataCards([errorCard], optionalCallback, failureType);
 };
 
@@ -604,8 +631,10 @@ SkillsWriter.prototype.saveDataCards = function saveDataCards(
     optionalUsage
 ) {
     const status = validateEnum(optionalStatus, skillInvocationStatus) ? optionalStatus : skillInvocationStatus.SUCCESS;
-    const usage = validateUsage(optionalUsage) ? optionalUsage : DEFAULT_USAGE;
-
+    let usage = null;
+    if (status === skillInvocationStatus.SUCCESS) {
+        usage = validateUsage(optionalUsage) ? optionalUsage : DEFAULT_USAGE;
+    }
     // create skill_invocations body
     const body = {
         status,
@@ -624,5 +653,6 @@ SkillsWriter.prototype.saveDataCards = function saveDataCards(
 /* Exporting useful functions and enums from skills-kit plugin */
 module.exports = {
     FilesReader,
-    SkillsWriter
+    SkillsWriter,
+    SkillsErrorEnum
 };
