@@ -39,8 +39,7 @@ Deploy the hello-file-sample-skill-automated-demo code:
 
 You should see an output such as this-
 
-```
-```
+<img width="400" alt="serverless architecture" src="https://raw.githubusercontent.com/box/box-skills-kit-nodejs/master/hello-file-sample-skill-automated-demo/successful-deployment-output.png">
 
 
 
