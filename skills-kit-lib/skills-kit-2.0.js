@@ -433,7 +433,34 @@ const processCardData = function processCardData(cardData, duration) {
 };
 
 /**
- * Private function to return a complete metadata card
+ * Private function, for underlying call to saving data to skills invocation api
+ * Will add metadata cards to the file and log other values for analysis purposes
+ *
+ * API Endpoint: '/skill_invocations/:skillID'
+ * Method: PUT
+ *
+ * @param {BoxSDK} client       Box SDK client to call skill invocations apiId
+ * @param {string} skillId      id of the skill for the '/skill_invocations/:skillID' call
+ * @param {Object} body         data to put
+ * @param {Function} callback   (optional) called with updated metadata if successful
+ * @return {Promise<Object>}    promise resolving to the updated metadata
+ */
+const putData = function putData(client, skillId, body, callback) {
+    const apiPath = urlPath(BASE_PATH, skillId);
+    const params = {
+        body,
+        headers: {
+            'Cache-Control': 'no-cache',
+            'Content-Type': 'application/json'
+        }
+    };
+    return client.wrapWithDefaultHandler(client.put)(apiPath, params, callback);
+};
+
+/** SkillsWriter public functions */
+
+/**
+ * Public function to return a complete metadata card
  *
  * @param {string} type         type of metadata card (status, transcript, etc.)
  * @param {string} title        title of metadata card (Status, Transcript, etc.)
@@ -477,32 +504,6 @@ SkillsWriter.prototype.createMetadataCard = function createMetadataCard(
     }
     return template;
 };
-/**
- * Private function, for underlying call to saving data to skills invocation api
- * Will add metadata cards to the file and log other values for analysis purposes
- *
- * API Endpoint: '/skill_invocations/:skillID'
- * Method: PUT
- *
- * @param {BoxSDK} client       Box SDK client to call skill invocations apiId
- * @param {string} skillId      id of the skill for the '/skill_invocations/:skillID' call
- * @param {Object} body         data to put
- * @param {Function} callback   (optional) called with updated metadata if successful
- * @return {Promise<Object>}    promise resolving to the updated metadata
- */
-const putData = function putData(client, skillId, body, callback) {
-    const apiPath = urlPath(BASE_PATH, skillId);
-    const params = {
-        body,
-        headers: {
-            'Cache-Control': 'no-cache',
-            'Content-Type': 'application/json'
-        }
-    };
-    return client.wrapWithDefaultHandler(client.put)(apiPath, params, callback);
-};
-
-/** SkillsWriter public functions */
 
 SkillsWriter.prototype.createTopicsCard = function createTopicsCard(
     topicsDataList,
