@@ -1,21 +1,17 @@
 # Box Skill Boilerplate with Skills-Kit, Serverless, Eslint & Jest
 
-The automated way of deploying and hosting your skills code is by putting it on a lambda cloud function with one of the commercial cloud service providers. Using a tool called serverless, we can do that in a quick and easy automated script deployment, as long as one has the user token for a cloud service provider account with permissions to create lambda cloud functions. This way one doesn't have to log into the cloud service provider's dashboard and update their code on the cloud function through manual upload and restarting of the service. 
+The automated way of deploying and hosting your skills code is by putting it on a lambda cloud function with one of the commercial cloud service providers. Using a tool called serverless, we can do that in a quick and easy automated script deployment, as long as one has the user token for a cloud service provider account with permissions to create lambda cloud functions. This way one doesn't have to log into the cloud service provider's dashboard and update their code on the cloud function through manual upload and restarting of the service.  
+
+Note: if you are looking to deploy your skill on your own server, use the code available here [simple_demo](../hello-file-sample-skill-simple-demo)
 
 
-- [When to use lambda cloud functions](#when-to-use-lambda-cloud-functions)
-- [Deployment instructions](#deployment-instructions)
+- [Quick Deployment instructions](#quick-deployment-instructions)
+- [How to architect lambda cloud functions](#how-to-architect-lambda-cloud-functions)
 - [Using Eslint (formatting) and Jest (testing)](#using-eslint-formatting-and-jest-testing)
 
 
-## When to use lambda cloud functions
 
-A lambda cloud function is a short-lived server instance that only exists when it recieves an event, and shut down when it the request has been processed. This is helpful in case you skill deployment follows the following architecture, since it doesn't use any more or less of the uptime than required to process your request.
-
-| <img width="400" alt="single server architecture" src="https://github.com/box/box-skills-kit-nodejs/blob/master/hello-file-sample-skill-automated-demo/single-server-model.png?raw=true"> | <img width="400" alt="multiple server architecture" src="https://github.com/box/box-skills-kit-nodejs/blob/master/hello-file-sample-skill-automated-demo/multiple-server-model.png?raw=true"> |
-
-
-## Deployment instructions
+## Quick deployment instructions
 
 As pre-requisites install the following locally on your developement machine:
 
@@ -41,6 +37,13 @@ Deploy the hello-file-sample-skill-automated-demo code:
 You should see an output such as this-
 
 <img width="800" alt="deployment output screen" src="https://raw.githubusercontent.com/box/box-skills-kit-nodejs/master/hello-file-sample-skill-automated-demo/successful-deployment-output.png">
+
+
+## How to architect lambda cloud functions
+
+A lambda cloud function is a short-lived server instance that only exists when it recieves an event, and shut down when it the request has been processed. This can helpful in case you skill deployment follows the following architectures, since it doesn't use any more or less of the uptime than required to process your request.
+
+| <img width="400" alt="single server architecture" src="https://github.com/box/box-skills-kit-nodejs/blob/master/hello-file-sample-skill-automated-demo/single-server-model.png?raw=true"> | <img width="400" alt="multiple server architecture" src="https://github.com/box/box-skills-kit-nodejs/blob/master/hello-file-sample-skill-automated-demo/multiple-server-model.png?raw=true"> |
 
 
 
