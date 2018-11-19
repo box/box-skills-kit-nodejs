@@ -27,11 +27,10 @@ Next configure your local serverless keys to point to any of the cloud hosting p
 * Microsoft Azure -> [console](https://azure.microsoft.com/en-us/overview/serverless-computing/) | [instructions to create keys](https://serverless.com/framework/docs/providers/azure/guide/credentials/)
 * Others provider options -> [Kubeless, Spotinst, Auth0, Fn, etc](https://serverless.com/framework/docs/providers/)
 
-Deploy the hello-file-sample-skill-automated-demo code:
+Deploy serverless-demo-automated code using the Node CLI with **a single command**:
 
 ```
-   cd  hello-file-sample-skill-automated-demo/
-   npm install
+   cd  custom-skill-boilerplate-code/serverless-demo-automated
    npm run deploy
 ```
 
