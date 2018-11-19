@@ -12,7 +12,10 @@ The automated way of deploying and hosting your skills code is by putting it on 
 
 A lambda cloud function is a short-lived server instance that only exists when it recieves an event, and shut down when it the request has been processed. This is helpful in case you skill deployment follows the following architecture, since it doesn't use any more or less of the uptime than required to process your request.
 
-<img width="400" alt="serverless architecture" src="https://cloud.box.com/s/t3cyut4pjg46rkfxg2yva3h7t5w3qobd">
+<img width="400" alt="single server architecture" src="https://github.com/box/box-skills-kit-nodejs/blob/master/hello-file-sample-skill-automated-demo/single-server-model.png?raw=true">
+
+<img width="400" alt="multiple server architecture" src="https://github.com/box/box-skills-kit-nodejs/blob/master/hello-file-sample-skill-automated-demo/multiple-server-model.png?raw=true">
+
 
 ## Deployment instructions
 
@@ -39,10 +42,17 @@ Deploy the hello-file-sample-skill-automated-demo code:
 
 You should see an output such as this-
 
-<img width="800" alt="serverless architecture" src="https://raw.githubusercontent.com/box/box-skills-kit-nodejs/master/hello-file-sample-skill-automated-demo/successful-deployment-output.png">
+<img width="800" alt="deployment output screen" src="https://raw.githubusercontent.com/box/box-skills-kit-nodejs/master/hello-file-sample-skill-automated-demo/successful-deployment-output.png">
 
 
 
 ## Using Eslint (formatting) and Jest (testing)
+You can improve the quality of your code by running formatting and unit-testing scripts. Simply type-
+```
+npm run format
+```
 
+```
+npm run test
+```
 
