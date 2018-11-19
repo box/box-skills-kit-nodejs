@@ -36,14 +36,39 @@ Deploy the hello-file-sample-skill-automated-demo code:
 
 You should see an output such as this-
 
+```
+Serverless: Packaging service...
+Serverless: Excluding development dependencies...
+Serverless: Uploading CloudFormation file to S3...
+Serverless: Uploading artifacts...
+Serverless: Uploading service .zip file to S3 (13 MB)...
+Serverless: Validating template...
+Serverless: Updating Stack...
+Serverless: Checking Stack update progress...
+..............
+Serverless: Stack update finished...
+Service Information
+service: box-hello-file-sample-skill-demo
+stage: dev
+region: us-west-2
+stack: box-hello-file-sample-skill-demo-dev
+api keys:
+  None
+endpoints:
+  ANY - https://**********.execute-api.us-west-2.amazonaws.com/dev/box-hello-file-sample-skill-demo
+functions:
+  skill: box-hello-file-sample-skill-demo-dev-skill
+Serverless: Removing old service artifacts from S3...
+```
 <img width="800" alt="deployment output screen" src="https://raw.githubusercontent.com/box/box-skills-kit-nodejs/master/hello-file-sample-skill-automated-demo/successful-deployment-output.png">
 
+Use this endpoint ```https://**********.execute-api.us-west-2.amazonaws.com/dev/box-hello-file-sample-skill-demo)``` to register your skill with box using this [registration form](https://goo.gl/forms/Z5K6MLKSIEJv1rih2).
 
 ## How to architect lambda cloud functions
 
 A lambda cloud function is a short-lived server instance that only exists when it recieves an event, and shut down when it the request has been processed. This can helpful in case you skill deployment follows the following architectures, since it doesn't use any more or less of the uptime than required to process your request.
 
-| <img width="400" alt="single server architecture" src="https://github.com/box/box-skills-kit-nodejs/blob/master/hello-file-sample-skill-automated-demo/single-server-model.png?raw=true"> | <img width="400" alt="multiple server architecture" src="https://github.com/box/box-skills-kit-nodejs/blob/master/hello-file-sample-skill-automated-demo/multiple-server-model.png?raw=true"> |
+| <img width="420" alt="single server architecture" src="https://github.com/box/box-skills-kit-nodejs/blob/master/hello-file-sample-skill-automated-demo/single-server-model.png?raw=true"> | <img width="420" alt="multiple server architecture" src="https://github.com/box/box-skills-kit-nodejs/blob/master/hello-file-sample-skill-automated-demo/multiple-server-model.png?raw=true"> |
 
 
 
