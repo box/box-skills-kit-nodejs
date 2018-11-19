@@ -5,8 +5,8 @@
     "scripts": {
         "format": "NODE_ENV=dev ./node_modules/.bin/prettier \"**/*.js\" --print-width 120 --single-quote --tab-width 4 --write; ./node_modules/.bin/eslint \"**/*.js\" --fix",
         "test": "NODE_ENV=dev ./node_modules/.bin/jest --coverage",
-        "build": "npm install; npm link ../skills-kit-lib;",
-        "deploy": "npm run build;  ./node_modules/.bin/serverless deploy",
+        "postinstall": "npm link ../skills-kit-lib;",
+        "deploy": "npm install;  ./node_modules/.bin/serverless deploy",
         "undeploy": "NODE_ENV=dev ./node_modules/.bin/serverless remove -v"
     },
     "author": "Box <oss@box.com>",
