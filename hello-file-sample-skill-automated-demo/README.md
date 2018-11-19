@@ -12,9 +12,7 @@ The automated way of deploying and hosting your skills code is by putting it on 
 
 A lambda cloud function is a short-lived server instance that only exists when it recieves an event, and shut down when it the request has been processed. This is helpful in case you skill deployment follows the following architecture, since it doesn't use any more or less of the uptime than required to process your request.
 
-<img width="400" alt="single server architecture" src="https://github.com/box/box-skills-kit-nodejs/blob/master/hello-file-sample-skill-automated-demo/single-server-model.png?raw=true">
-
-<img width="400" alt="multiple server architecture" src="https://github.com/box/box-skills-kit-nodejs/blob/master/hello-file-sample-skill-automated-demo/multiple-server-model.png?raw=true">
+| <img width="400" alt="single server architecture" src="https://github.com/box/box-skills-kit-nodejs/blob/master/hello-file-sample-skill-automated-demo/single-server-model.png?raw=true"> | <img width="400" alt="multiple server architecture" src="https://github.com/box/box-skills-kit-nodejs/blob/master/hello-file-sample-skill-automated-demo/multiple-server-model.png?raw=true"> |
 
 
 ## Deployment instructions
