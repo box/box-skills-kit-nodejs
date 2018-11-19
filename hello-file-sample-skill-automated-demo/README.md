@@ -60,7 +60,6 @@ functions:
   skill: box-hello-file-sample-skill-demo-dev-skill
 Serverless: Removing old service artifacts from S3...
 ```
-<img width="800" alt="deployment output screen" src="https://raw.githubusercontent.com/box/box-skills-kit-nodejs/master/hello-file-sample-skill-automated-demo/successful-deployment-output.png">
 
 Use this endpoint ```https://**********.execute-api.us-west-2.amazonaws.com/dev/box-hello-file-sample-skill-demo)``` to register your skill with box using this [registration form](https://goo.gl/forms/Z5K6MLKSIEJv1rih2).
 
