@@ -1,7 +1,7 @@
 # For full Serverless config options, check the docs:
 #    https://serverless.com/framework/docs/providers/aws/guide/serverless.yml/
 
-service: box-hello-file-sample-skill-demo
+service: my-quick-automated-demo
 
 # You can change this to any cloud provider:
 # AWS Lambda: <https://aws.amazon.com/lambda/>
