@@ -88,7 +88,7 @@ Use this endpoint `https://**********.execute-api.us-west-2.amazonaws.com/dev/my
 
 ### Using Eslint (formatting) and Jest (testing)
 
-You can improve the quality of your code by running formatting and unit-testing scripts. Simply type-
+You can improve the quality of your code by running formatting and unit-testing scripts. Simply type and enter-
 
 ```
 npm run format
