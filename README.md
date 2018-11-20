@@ -20,6 +20,7 @@ const { FilesReader, SkillsWriter, SkillsErrorEnum  } = require('skills-kit-2.0'
 const filesReader = FilesReader(event.body);  // This is the event recieved once you have registered your skill with Box
                                               // see deployment instructions in custom-skill-boilerplate-code/README.md
 const skillsWriter = SkillsWriter(filesReader.getFileContext());
+const fileId = filesReader.getFileContext().fileId;
 
 await skillsWriter.saveProcessingCard(); // let your file previewer know that your skills processing has started
 
@@ -31,7 +32,7 @@ const data = await MLProvider.call( someParams ).catch(error){
 } 
 
 if (data.length > 0) {
-   console.info(`Response recieved from ML provider ${JSON.stringify(data)}`);
+   console.info(`Response recieved from ML provider for file ${fileId} \n ${JSON.stringify(data)}`);
    var entries = [];
    for (let i = 0; i < data.length; i++) {
        entries.push({
@@ -42,8 +43,11 @@ if (data.length > 0) {
    // Create metadata cards to show in Box preview next to file.
    const keywordCards = skillsWriter.createTopicsCard(entries);
    await skillsWriter.saveDataCards(keywordCards, (error) =>
-       console.error(` Error occured writing back Metadata to Box ${JSON.stringify(error)});
+       console.error(`Error occured writing back Metadata to Box for file ${fileId} \n ${JSON.stringify(error)});
    );
+} else {
+   console.lof(`No information was found for file ${fileId}`);
+   await skillsWriter.saveErrorCard(SkillsErrorEnum.NO_INFO_FOUND);
 }
    
 ```
