@@ -2,7 +2,7 @@
 
 To manually run your own server and not use cloud functions, you can this [external blog guidelines](http://www.hacksparrow.com/tcp-socket-programming-in-node-js.html), or your own technique.
 
-In that case you can build your skill off the boilerplate provided in [basic-demo-self-deploy](basic-demo-self-deploy)
+In that case you can build your skill off the simple example provided in [basic-demo-self-deploy](basic-demo-self-deploy)
 
 ## Example with Skills-Kit-Lib, Serverless, Eslint & Jest
 
@@ -47,16 +47,16 @@ You should see an output such as this-
 ```
 npm run deploy
 
-> serverless-demo-automated@1.0.0 deploy /your-project-path/box-skills-kit/custom-skill-boilerplate-code/serverless-demo-automated
+> serverless-demo-automated@1.0.0 deploy /your-project-path/box-skills-kit/custom-skill-example-code/serverless-demo-automated
 > npm install;  ./node_modules/.bin/serverless deploy
 
 
-> serverless-demo-automated@1.0.0 postinstall /your-project-path/box-skills-kit/custom-skill-boilerplate-code/serverless-demo-automated
+> serverless-demo-automated@1.0.0 postinstall /your-project-path/box-skills-kit/custom-skill-example-code/serverless-demo-automated
 > npm link ../../skills-kit-lib
 
 up to date in 0.589s
 /your-home-path/.nvm/versions/node/v9.4.0/lib/node_modules/skills-kit-lib -> /your-project-path/box-skills-kit/skills-kit-lib
-/your-project-path/box-skills-kit/custom-skill-boilerplate-code/serverless-demo-automated/node_modules/skills-kit-lib -> /your-home-path/.nvm/versions/node/v9.4.0/lib/node_modules/skills-kit-lib -> /your-project-path/box-skills-kit/skills-kit-lib
+/your-project-path/box-skills-kit/custom-skill-example-code/serverless-demo-automated/node_modules/skills-kit-lib -> /your-home-path/.nvm/versions/node/v9.4.0/lib/node_modules/skills-kit-lib -> /your-project-path/box-skills-kit/skills-kit-lib
 removed 1 package in 4.768s
 Serverless: Packaging service...
 Serverless: Excluding development dependencies...
@@ -91,8 +91,8 @@ Use this endpoint `https://**********.execute-api.us-west-2.amazonaws.com/dev/my
 
 A lambda cloud function is a short-lived server instance that only exists when it recieves an event, and shut down when it the request has been processed. This can helpful in case you skill deployment follows the following architectures, since it doesn't use any more or less of the uptime than required to process your request. However, you can also be running your own server with multiple nodejs services. In either case you would need to look at individual case of how long the processing needs to run, if it's synchronous or asychronous, and architect your services accordingly by as either of these models.
 
-| <img width="420" alt="multiple server architecture" src="https://github.com/box/box-skills-kit-nodejs/blob/master/custom-skill-boilerplate-code/multiple-server-model.png?raw=true"> |
-<img width="420" alt="single server architecture" src="https://github.com/box/box-skills-kit-nodejs/blob/master/custom-skill-boilerplate-code/single-server-model.png?raw=true"> |
+| <img width="420" alt="multiple server architecture" src="https://github.com/box/box-skills-kit-nodejs/blob/master/custom-skill-example-code/multiple-server-model.png?raw=true"> |
+<img width="420" alt="single server architecture" src="https://github.com/box/box-skills-kit-nodejs/blob/master/custom-skill-example-code/single-server-model.png?raw=true"> |
 
 ## Using Eslint (formatting) and Jest (testing)
 
