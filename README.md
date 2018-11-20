@@ -1,7 +1,7 @@
 # Box Skills Kit in Node.js 
 
 
-This project is the official toolkit for writing Box Custom Skills in Node.js. Your custom skill helps you extract intelligence from files residing in Box. The toolkit helps you do half the work that you would require in building a custom skill which is getting the skill event from Box, accessing your file from Box, and writing the Metadata back. However, you will still need to do the remaining half of the work of investigating a Machine Learning provider, creating an account with them, knowing how to call their API, or alternatively you could have your own intelligence logic. 
+This project is the official toolkit for writing Box Custom Skills in Node.js. Your custom skill helps extract intelligence from files residing in Box. The toolkit helps you do half the work that you would require in building a custom skill which is getting the skill event from Box, accessing your file from Box, and writing the Metadata back. However, you will still need to do the remaining half the work of investigating a Machine Learning provider, creating an account with them, knowing how to call their API, or alternatively you could have your own intelligence logic. 
 
 
 * For more information on Box Skills, what kind of Preview Cards you can create, as well as a visual instructions on configuring your skills code with Box once you deploy it, visit: [box skills developer documentation](https://developer.box.com/docs/box-skills) 
