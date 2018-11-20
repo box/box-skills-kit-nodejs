@@ -1,11 +1,11 @@
 {
     "name": "serverless-demo-automated",
     "version": "1.0.0",
-    "description": "Boilerplate Box Skill Code Using Skills-Kit, Serverless, Eslint, Jest",
+    "description": "Boilerplate Box Skill Code Using Skills-Kit-Lib, Serverless, Eslint, Jest",
     "scripts": {
         "format": "NODE_ENV=dev ./node_modules/.bin/prettier \"**/*.js\" --print-width 120 --single-quote --tab-width 4 --write; ./node_modules/.bin/eslint \"**/*.js\" --fix",
         "test": "NODE_ENV=dev ./node_modules/.bin/jest --coverage",
-        "postinstall": "npm link ../../skills-kit-lib",
+        "postinstall": "npm link ../../skills-kit-library",
         "deploy": "npm install;  ./node_modules/.bin/serverless deploy",
         "undeploy": "NODE_ENV=dev ./node_modules/.bin/serverless remove -v"
     },
