@@ -49,11 +49,11 @@ npm run deploy
 
 
 > serverless-demo-automated@1.0.0 postinstall /your-project-path/box-skills-kit/custom-skill-example-code/serverless-demo-automated
-> npm link ../../skills-kit-lib
+> npm link ../../skills-kit-library
 
 up to date in 0.589s
-/your-home-path/.nvm/versions/node/v9.4.0/lib/node_modules/skills-kit-lib -> /your-project-path/box-skills-kit/skills-kit-lib
-/your-project-path/box-skills-kit/custom-skill-example-code/serverless-demo-automated/node_modules/skills-kit-lib -> /your-home-path/.nvm/versions/node/v9.4.0/lib/node_modules/skills-kit-lib -> /your-project-path/box-skills-kit/skills-kit-lib
+/your-home-path/.nvm/versions/node/v9.4.0/lib/node_modules/skills-kit-lib -> /your-project-path/box-skills-kit/skills-kit-library
+/your-project-path/box-skills-kit/custom-skill-example-code/serverless-demo-automated/node_modules/skills-kit-library -> /your-home-path/.nvm/versions/node/v9.4.0/lib/node_modules/skills-kit-lib -> /your-project-path/box-skills-kit/skills-kit-library
 removed 1 package in 4.768s
 Serverless: Packaging service...
 Serverless: Excluding development dependencies...
