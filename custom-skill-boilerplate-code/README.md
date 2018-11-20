@@ -2,7 +2,7 @@
 
 If you prefer a self-managed deployment, you can setup your own server running a node application and copy and use the files from [basic-demo-self-deploy](basic-demo-self-deploy). With the endpoint created to received Skills event from Box, configure it with Box using this [registration form](https://goo.gl/forms/Z5K6MLKSIEJv1rih2).
 
-## Example with Skills-Kit-Lib, Serverless, Eslint & Jest
+## Example Box Skill Code using Skills-Kit-Lib, Serverless, Eslint & Jest
 
 The automated way of deploying and hosting your skills code is by putting it on a lambda cloud function with one of the commercial cloud service providers. Using a tool called serverless, we can do that in a quick and easy automated script deployment, as long as one has the user token for a cloud service provider account with permissions to create lambda cloud functions. This way one doesn't have to log into the cloud service provider's dashboard and update their code on the cloud function through manual upload and restarting of the service.
 
