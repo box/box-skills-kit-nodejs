@@ -8,7 +8,7 @@ This project is the official toolkit for writing Box Custom Skills in Node.js. Y
 
 * For developer documentation on Skills-Kit library API read under [skills-kit library](skills-kit-library) folder.
 * For a quick start on deploying your first skills service read under the [custom skills examples](custom-skill-example-code) folder.
-* For more diverse samples of Box Custom Skills using various ML providers visit the [box community page](www.github.com/box-community)
+* For more diverse samples of Box Custom Skills using various ML providers visit the [box community page](https://github.com/box-community)
 
 
 In general, writing your own Custom Skill could be done in a few lines of code, such as shown below for a generic ML provider:
