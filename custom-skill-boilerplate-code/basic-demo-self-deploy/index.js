@@ -11,7 +11,6 @@ module.exports.handler = async (event, context, callback) => {
     try {
         // One of six ways of accessing file content from Box for ML processing with FilesReader
         // ML processing code not shown here, and will need to be added by the skill developer.
-        // ( see a quick sample of ML call for a skill here: https://www.diffchecker.com/MvOs9xow )
         const base64File = await filesReader.getBasicFormatContentBase64(); // eslint-disable-line no-unused-vars
         console.log(`printing simplified format file content in base64 encoding: ${base64File}`);
 
@@ -50,8 +49,8 @@ module.exports.handler = async (event, context, callback) => {
     } catch (error) {
         // Incase of error, write back an error card to UI.
         // Note: Skill developers may want to inspect the 'error' variable
-        // and write back more specific errorCodes (@print SkillsWriter.error.keys())
-        console.error(`Skill processing failed for file: ${filesReader.getFileContext().fileId} with error: ${error}`);
+        // and write back more specific errorCodes (@print SkillsErrorEnum)
+        console.error(`Skill processing failed for file: ${filesReader.getFileContext().fileId} with error: ${error.message}`);
         await skillsWriter.saveErrorCard(skillsWriter.error.UNKNOWN);
     } finally {
         // Skills engine requires a 200 response within 10 seconds of sending an event.
