@@ -14,7 +14,7 @@ The automated way of deploying and hosting your skills code is by putting it on 
 As pre-requisites install the following locally on your developement machine:
 
 * [Node](https://nodejs.org/dist/latest-v8.x/) (we recommend node-8 because then your development and deployment environment would match. Once you download and install node, you get access to the npm CLI for all the commands later on) 
-* [Serverless](https://serverless.com)
+* [Serverless](https://serverless.com) ( hint: you may need to use sudo npm install )
 
 Next generate your cloud provider keys to setup in serverless keys, through any provider of your choice:
 
