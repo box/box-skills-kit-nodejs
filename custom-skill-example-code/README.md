@@ -83,7 +83,7 @@ functions:
   skill: my-quick-automated-demo-dev-skill
 ```
 
-Use this endpoint `https://**********.execute-api.us-west-2.amazonaws.com/dev/my-quick-automated-demo` to register your skill with box using this [registration form](https://goo.gl/forms/Z5K6MLKSIEJv1rih2).
+Use this endpoint `https://**********.execute-api.us-west-2.amazonaws.com/dev/my-quick-automated-demo` to register your skill with box using this [registration form](https://goo.gl/forms/Z5K6MLKSIEJv1rih2). Everytime, a file is uploaded, moved or copied to one of the folder under the enterprise where your skill is enabled, your service would recieve an event, and you can see your code execution log, logging into your cloud portal.
 
 
 ### Using Eslint (formatting) and Jest (testing)
