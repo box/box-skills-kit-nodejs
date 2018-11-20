@@ -97,7 +97,7 @@ npm run format
 npm run test
 ```
 
-## How to architect your skill services
+## Extra! How to architect your skill services
 
 A lambda cloud function is a short-lived server instance that only exists when it recieves an event, and shut down when it the request has been processed. This can helpful in case you skill deployment follows the following architectures, since it doesn't use any more or less of the uptime than required to process your request. However, you can also be running your own server with multiple nodejs services. In either case you would need to look at individual case of how long the processing needs to run, if it's synchronous or asychronous, and architect your services accordingly by as either of these models.
 
