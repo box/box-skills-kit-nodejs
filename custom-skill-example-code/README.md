@@ -7,10 +7,9 @@ If you prefer a self-managed deployment, you can setup your own server running a
 The automated way of deploying and hosting your skills code is by putting it on a lambda cloud function with one of the commercial cloud service providers. Using a tool called serverless, we can do that in a quick and easy automated script deployment, as long as one has the user token for a cloud service provider account with permissions to create lambda cloud functions. This way one doesn't have to log into the cloud service provider's dashboard and update their code on the cloud function through manual upload and restarting of the service.
 
 * [Quick Deployment instructions](#quick-deployment-instructions)
-* [How to architect your skill services](#how-to-architect-your-skill-services)
 * [Using Eslint (formatting) and Jest (testing)](#using-eslint-formatting-and-jest-testing)
 
-## Quick deployment instructions
+### Quick deployment instructions
 
 As pre-requisites install the following locally on your developement machine:
 
@@ -85,14 +84,8 @@ functions:
 
 Use this endpoint `https://**********.execute-api.us-west-2.amazonaws.com/dev/my-quick-automated-demo` to register your skill with box using this [registration form](https://goo.gl/forms/Z5K6MLKSIEJv1rih2).
 
-## How to architect your skill services
 
-A lambda cloud function is a short-lived server instance that only exists when it recieves an event, and shut down when it the request has been processed. This can helpful in case you skill deployment follows the following architectures, since it doesn't use any more or less of the uptime than required to process your request. However, you can also be running your own server with multiple nodejs services. In either case you would need to look at individual case of how long the processing needs to run, if it's synchronous or asychronous, and architect your services accordingly by as either of these models.
-
-| <img width="420" alt="multiple server architecture" src="https://github.com/box/box-skills-kit-nodejs/blob/master/custom-skill-example-code/multiple-server-model.png?raw=true"> |
-<img width="420" alt="single server architecture" src="https://github.com/box/box-skills-kit-nodejs/blob/master/custom-skill-example-code/single-server-model.png?raw=true"> |
-
-## Using Eslint (formatting) and Jest (testing)
+### Using Eslint (formatting) and Jest (testing)
 
 You can improve the quality of your code by running formatting and unit-testing scripts. Simply type-
 
@@ -103,3 +96,10 @@ npm run format
 ```
 npm run test
 ```
+
+## How to architect your skill services
+
+A lambda cloud function is a short-lived server instance that only exists when it recieves an event, and shut down when it the request has been processed. This can helpful in case you skill deployment follows the following architectures, since it doesn't use any more or less of the uptime than required to process your request. However, you can also be running your own server with multiple nodejs services. In either case you would need to look at individual case of how long the processing needs to run, if it's synchronous or asychronous, and architect your services accordingly by as either of these models.
+
+| <img width="420" alt="multiple server architecture" src="https://github.com/box/box-skills-kit-nodejs/blob/master/custom-skill-example-code/multiple-server-model.png?raw=true"> |
+<img width="420" alt="single server architecture" src="https://github.com/box/box-skills-kit-nodejs/blob/master/custom-skill-example-code/single-server-model.png?raw=true"> |
