@@ -1,5 +1,5 @@
 // Import FilesReader and SkillsWriter classes from skills-kit-2.0.js library
-const { FilesReader, SkillsWriter } = require('skills-kit-lib/skills-kit-2.0');
+const { FilesReader, SkillsWriter, SkillsErrorEnum } = require('skills-kit-lib/skills-kit-2.0');
 
 module.exports.handler = async (event, context, callback) => {
     // During code development you can copy an incoming box skills event
@@ -12,6 +12,8 @@ module.exports.handler = async (event, context, callback) => {
     // instantiate your two skill development helper tools
     const filesReader = new FilesReader(event.body);
     const skillsWriter = new SkillsWriter(filesReader.getFileContext());
+    
+    await skillsWriter.saveProcessingCard();
 
     try {
         // One of six ways of accessing file content from Box for ML processing with FilesReader
@@ -57,7 +59,7 @@ module.exports.handler = async (event, context, callback) => {
         // Note: Skill developers may want to inspect the 'error' variable
         // and write back more specific errorCodes (@print SkillsWriter.error.keys())
         console.error(`Skill processing failed for file: ${filesReader.getFileContext().fileId} with error: ${error}`);
-        await skillsWriter.saveErrorCard(skillsWriter.error.UNKNOWN);
+        await skillsWriter.saveErrorCard(SkillsErrorEnum.UNKNOWN);
     } finally {
         // Skills engine requires a 200 response within 10 seconds of sending an event.
         // Please see different code architecture configurations in git docs,
