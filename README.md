@@ -28,7 +28,7 @@ await skillsWriter.saveProcessingCard(); // let your file previewer know that yo
 // Externally processing your file through some Machine Learning (ML) Provider
 const somParam = { fileUrl: filesReader.getFileContext().fileDownloadURL }; // ML API specific configurations
 const data = await MLProvider.call( someParams ).catch(error){
-    console.error('Error occured in ML call');
+    console.error(`Error occured in ML call for file ${fileId}`);
     await skillsWriter.saveErrorCard(SkillsErrorEnum.FILE_PROCESSING_ERROR);
 } 
 
