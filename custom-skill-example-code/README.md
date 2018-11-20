@@ -32,7 +32,7 @@ Next, copy this git project locally
    git clone https://github.com/box/box-skills-kit-nodejs.git 
 ```
    
-Finally, deploy serverless-demo-automated code using the Node CLI with **a single command**:
+Finally, deploy serverless-demo-automated code using the Node CLI with **a single command**. Everytime you make change to the code, you need to rerun this command.
 
 ```
    cd  box-skills-kit-nodejs/custom-skill-example-code/serverless-demo-automated
