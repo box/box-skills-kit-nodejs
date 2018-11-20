@@ -31,6 +31,7 @@ Next, copy this git project locally
 ```
    git clone https://github.com/box/box-skills-kit-nodejs.git 
 ```
+or download and unzip: https://github.com/box/box-skills-kit-nodejs/archive/master.zip
    
 Finally, deploy serverless-demo-automated code using the Node CLI with **a single command**. Everytime you make change to the code, you need to rerun this command.
 
