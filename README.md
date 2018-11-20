@@ -32,7 +32,7 @@ const data = await MLProvider.call( someParams ).catch(error){
 } 
 
 if (data.length > 0) {
-   console.info(`Response recieved from ML provider for file ${fileId} \n ${JSON.stringify(data)}`);
+   console.log(`Response recieved from ML provider for file ${fileId} \n ${JSON.stringify(data)}`);
    var entries = [];
    for (let i = 0; i < data.length; i++) {
        entries.push({
@@ -46,7 +46,7 @@ if (data.length > 0) {
        console.error(`Error occured writing back Metadata to Box for file ${fileId} \n ${JSON.stringify(error)});
    );
 } else {
-   console.lof(`No information was found for file ${fileId}`);
+   console.log(`No information was found for file ${fileId}`);
    await skillsWriter.saveErrorCard(SkillsErrorEnum.NO_INFO_FOUND);
 }
    
