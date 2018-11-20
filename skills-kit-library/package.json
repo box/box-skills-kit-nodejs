@@ -1,5 +1,5 @@
 {
-    "name": "skills-kit-lib",
+    "name": "skills-kit-library",
     "version": "2.0.0",
     "description": "Boilerplate Box Skill Code Using Skills-Kit, Serverless, Eslint, Jest",
     "author": "Box <oss@box.com>",
