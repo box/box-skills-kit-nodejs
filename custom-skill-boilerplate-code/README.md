@@ -1,10 +1,10 @@
-## Boilerplate Box Skill Code Using Only Skills-Kit-Lib
+## Example Box Skill Code Using Only Skills-Kit-Lib
 
 To manually run your own server and not use cloud functions, you can this [external blog guidelines](http://www.hacksparrow.com/tcp-socket-programming-in-node-js.html), or your own technique.
 
 In that case you can build your skill off the boilerplate provided in [basic-demo-self-deploy](basic-demo-self-deploy)
 
-## Boilerplate with Skills-Kit-Lib, Serverless, Eslint & Jest
+## Example with Skills-Kit-Lib, Serverless, Eslint & Jest
 
 The automated way of deploying and hosting your skills code is by putting it on a lambda cloud function with one of the commercial cloud service providers. Using a tool called serverless, we can do that in a quick and easy automated script deployment, as long as one has the user token for a cloud service provider account with permissions to create lambda cloud functions. This way one doesn't have to log into the cloud service provider's dashboard and update their code on the cloud function through manual upload and restarting of the service.
 
@@ -16,21 +16,29 @@ The automated way of deploying and hosting your skills code is by putting it on 
 
 As pre-requisites install the following locally on your developement machine:
 
-* [Node](https://nodejs.org/en/)
+* [Node](https://nodejs.org/dist/latest-v8.x/) (we recommend node-8 because then your development and deployment environment would match. Once your download and install node, you get access to the npm CLI for all the commands later on) 
 * [Serverless](https://serverless.com)
 
-Next configure your local serverless keys to point to any of the cloud hosting providers of your choice:
+Next generate your cloud provider keys to setup in serverless keys, through any provider of your choice:
 
-* AWS Lambda -> [console](https://aws.amazon.com/lambda/) | [instructions to create keys](https://serverless.com/framework/docs/providers/aws/guide/credentials/)
+* AWS Lambda -> [console](https://aws.amazon.com/lambda/) | [instructions to create keys](https://serverless.com/framework/docs/providers/aws/guide/credentials#creating-aws-access-keys)
 * IBM Open Whisk -> [console](https://www.ibm.com/cloud/functions/details) | [instructions to create keys](https://serverless.com/framework/docs/providers/openwhisk/guide/credentials/)
 * Google Cloud Functions -> [console](https://cloud.google.com/functions/)| [instructions to create keys](https://serverless.com/framework/docs/providers/azure/guide/credentials/)
 * Microsoft Azure -> [console](https://azure.microsoft.com/en-us/overview/serverless-computing/) | [instructions to create keys](https://serverless.com/framework/docs/providers/azure/guide/credentials/)
 * Others provider options -> [Kubeless, Spotinst, Auth0, Fn, etc](https://serverless.com/framework/docs/providers/)
 
-Deploy serverless-demo-automated code using the Node CLI with **a single command**:
+You can setup your local serverless to use your new keys with this [sample command](https://serverless.com/framework/docs/providers/aws/guide/credentials#setup-with-serverless-config-credentials-command)
+
+Next, copy this git project locally
 
 ```
-   cd  custom-skill-boilerplate-code/serverless-demo-automated
+   git clone https://github.com/box/box-skills-kit-nodejs.git 
+```
+   
+Finally, deploy serverless-demo-automated code using the Node CLI with **a single command**:
+
+```
+   cd  box-skills-kit-nodejs/custom-skill-example-code/serverless-demo-automated
    npm run deploy
 ```
 
