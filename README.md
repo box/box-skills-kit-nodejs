@@ -19,7 +19,7 @@ const { FilesReader, SkillsWriter, SkillsErrorEnum  } = require('skills-kit-2.0'
 const { MLProvider } = require('your-ml-provider-client-in-package-json-non-dev-dependencies');
 
 const filesReader = FilesReader(event.body);  // This is the event recieved once you have registered your skill with Box
-                                              // see deployment instructions in custom-skill-boilerplate-code/README.md
+                                              // see deployment instructions in custom-skill-example-code/README.md
 const skillsWriter = SkillsWriter(filesReader.getFileContext());
 const fileId = filesReader.getFileContext().fileId;
 
