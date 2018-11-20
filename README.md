@@ -16,6 +16,7 @@ In general, writing your own Custom Skill could be done in a few lines of code, 
 
 ```
 const { FilesReader, SkillsWriter, SkillsErrorEnum  } = require('skills-kit-2.0');
+const { MLProvider } = require('your-ml-provider-client-in-package-json-non-dev-dependencies');
 
 const filesReader = FilesReader(event.body);  // This is the event recieved once you have registered your skill with Box
                                               // see deployment instructions in custom-skill-boilerplate-code/README.md
