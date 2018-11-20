@@ -38,7 +38,7 @@ if (data.length > 0) {
    for (let i = 0; i < data.length; i++) {
        entries.push({
            type: 'text',
-           text: data[i].Name
+           text: data.info[i].Name
            });
        } 
    // Create metadata cards to show in Box preview next to file.
