@@ -1,5 +1,5 @@
 // Import FilesReader and SkillsWriter classes from skills-kit-2.0.js library
-const { FilesReader, SkillsWriter } = require('skills-kit-lib/skills-kit-2.0');
+const { FilesReader, SkillsWriter, SkillsErrorEnum } = require('skills-kit-lib/skills-kit-2.0');
 
 module.exports.handler = async (event, context, callback) => {
     console.debug(`Box event received: ${JSON.stringify(event)}`);
@@ -51,7 +51,7 @@ module.exports.handler = async (event, context, callback) => {
         // Note: Skill developers may want to inspect the 'error' variable
         // and write back more specific errorCodes (@print SkillsErrorEnum)
         console.error(`Skill processing failed for file: ${filesReader.getFileContext().fileId} with error: ${error.message}`);
-        await skillsWriter.saveErrorCard(skillsWriter.error.UNKNOWN);
+        await skillsWriter.saveErrorCard(SkillsErrorEnum.UNKNOWN);
     } finally {
         // Skills engine requires a 200 response within 10 seconds of sending an event.
         // Please see different code architecture configurations in git docs,
