@@ -1,8 +1,6 @@
 ## Example Box Skill Code Using Only Skills-Kit-Lib
 
-To manually run your own server and not use cloud functions, you can this [external blog guidelines](http://www.hacksparrow.com/tcp-socket-programming-in-node-js.html), or your own technique.
-
-In that case you can build your skill off the simple example provided in [basic-demo-self-deploy](basic-demo-self-deploy)
+If you prefer a self-managed deployment, you can setup your own server running a node application and copy and use the files from [basic-demo-self-deploy](basic-demo-self-deploy). With the endpoint created to received Skills event from Box, configure it with Box using this [registration form](https://goo.gl/forms/Z5K6MLKSIEJv1rih2).
 
 ## Example with Skills-Kit-Lib, Serverless, Eslint & Jest
 
