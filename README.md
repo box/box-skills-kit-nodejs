@@ -1,54 +1,148 @@
-# Box Skills Kit in Node.js 
+# Box Skills Kit for Node.js 
+
+This is the official toolkit provided by [Box](https://box.com) for creating custom [Box Skills](https://developer.box.com/docs/box-skills) written in Node.js.
+
+* [What is a Box Skill?](#WhatisaBoxSkill)
+* [How does a Box Skill work?](#HowdoesaBoxSkillwork)
+* [What is this toolkit for?](#Whatisthistoolkitfor)
+* [Where can I learn more?](#WherecanIlearnmore)
+* [Installation](#Installation)
+* [Basic usage](#Basicusage)
+	* [1. Reading the webhook payload](#Readingthewebhookpayload)
+	* [2. Processing the file using a ML provider](#ProcessingthefileusingaMLprovider)
+	* [3. Write Metadata to File](#WriteMetadatatoFile)
+	* [(Optional) Deal with errors](#OptionalDealwitherrors)
+
+## What is a Box Skill?
+
+A Box Skill is a type of application that performs custom processing for files uploaded to Box.
+
+Often, Box Skills leverage **third-party AI or machine learning providers** to automatically extract information from files upon upload to Box. For example, a Box Skill could automatically label objects in images using a computer vision service.
+
+The resulting data can then be written back to the file on Box as **rich metadata** cards.
+
+![Metadata on a Video](docs/metadata.png)
+
+## How does a Box Skill work?
+
+At a basic level, a Box Skill follows the following steps.
+
+1. A file is uploaded to Box
+1. Box triggers a webhook to your (serverless) endpoint
+1. Your server (using the Box Skills kit) processes the webhook's event payload
+1. Your server downloads the file, or passes a reference to the file to your machine learning provider
+1. Your machine learning provider processes the file and provides some data to your server
+1. Your server (using the Box Skills kit) writes rick metadata to the file on Box
+1. Your users will now have new metadata available to them in the Box web app, including while searching for files.
+
+## What is this toolkit for?
+
+This toolkit helps to simplify building a custom skill in Node.js. It simplifies processing the skill event from Box, accessing your file, and writing the metadata back. 
+
+You will still need to hook things up to your own **Machine Learning provider**, including creating an account with them. This toolkit helps you with all the interactions with Box but does not help you with the API calls to your machine learning provider.
+
+## Where can I learn more?
+
+For more information on Box Skills, what kind of metadata you can write back to Box, as well as visual instructions on configuring your skills code with Box, visit the [box skills developer documentation](https://developer.box.com/docs/box-skills).
+
+Additionally, have a look at:
+
+* More documentation on the [library's API](skills-kit-library)
+* A quick start on [deploying your first skills service](custom-skill-example-code)
+* [More samples](https://github.com/box-community) of Box Custom Skills using various ML providers
+
+## Installation
+
+[TODO]
+
+## Basic usage
+
+Writing your own Custom Skill will change depending on your data and the machine learning provider used. A generic example would look something like this.
 
 
-This project is the official toolkit for writing Box Custom Skills in Node.js. Your custom skill helps extract intelligence from files residing in Box. The toolkit helps you do half the work that you would require in building a custom skill which is getting the skill event from Box, accessing your file from Box, and writing the Metadata back. However, you will still need to do the remaining half the work of investigating a Machine Learning provider, creating an account with them, knowing how to call their API, or alternatively you could have your own intelligence logic. 
+### <a name='Readingthewebhookpayload'></a>1. Reading the webhook payload
 
+The way your request data (`event` in this example) comes in 
+will differ depending on the web service you are using,
+though in our example we are assuming you are using the Serverless framework
 
-* For more information on Box Skills, what kind of Preview Cards you can create, as well as a visual instructions on configuring your skills code with Box once you deploy it, visit: [box skills developer documentation](https://developer.box.com/docs/box-skills) 
+```js
+// import the FilesReader from the kit
+const { FilesReader  } = require('./skills-kit-2.0');
+// Here, event is the webhook data received at your endpoint.
+const reader = new FilesReader(event.body);  
 
-* For developer documentation on Skills-Kit library API read under the [skills-kit library](skills-kit-library) folder.
-* For a quick start on deploying your first skills service read under the [custom skills examples](custom-skill-example-code) folder.
-* For more diverse samples of Box Custom Skills using various ML providers visit the [box community page](https://github.com/box-community)
-
-
-In general, writing your own Custom Skill could be done in a few lines of code, such as shown below for a generic ML provider:
-
-
+// the ID of the file
+const fileId = reader.getFileContext().fileId;
+// the read-only download URL of the file
+const fileURL = reader.getFileContext().fileDownloadURL;
 ```
-const { FilesReader, SkillsWriter, SkillsErrorEnum  } = require('./skills-kit-2.0');
-const { MLProvider } = require('your-ml-provider-client-in-package-json-non-dev-dependencies');
 
-const filesReader = FilesReader(event.body);  // This is the event recieved once you have registered your skill with Box
-                                              // see deployment instructions in custom-skill-example-code/README.md
-const skillsWriter = SkillsWriter(filesReader.getFileContext());
-const fileId = filesReader.getFileContext().fileId;
+### <a name='ProcessingthefileusingaMLprovider'></a>2. Processing the file using a ML provider
 
-await skillsWriter.saveProcessingCard(); // let your file previewer know that your skills processing has started
+This part will heavily depend on your machine learning provider. In this example we use a
+theoretical provider called `MLProvider`.
 
-// Externally processing your file through some Machine Learning (ML) Provider
-const somParam = { fileUrl: filesReader.getFileContext().fileDownloadURL }; // ML API specific configurations
-const data = await MLProvider.call( someParams ).catch(error){
-    console.error(`Error occured in ML call for file ${fileId}`);
-    await skillsWriter.saveErrorCard(SkillsErrorEnum.FILE_PROCESSING_ERROR);
-} 
+```js
+const { MLProvider } = require('your-ml-provider');
+// import the SkillsWriter and SkillsErrorEnum from the kit
+const { SkillsWriter, SkillsErrorEnum } = require('./skills-kit-2.0');
 
-if (data.length > 0) {
-   console.log(`Response recieved from ML provider for file ${fileId} \n ${JSON.stringify(data)}`);
-   var entries = [];
-   for (let i = 0; i < data.length; i++) {
-       entries.push({
-           type: 'text',
-           text: data.info[i].Name
-           });
-       } 
-   // Create metadata cards to show in Box preview next to file.
-   const keywordCards = skillsWriter.createTopicsCard(entries);
-   await skillsWriter.saveDataCards(keywordCards, (error) =>
-       console.error(`Error occured writing back Metadata to Box for file ${fileId} \n ${JSON.stringify(error)});
-   );
-} else {
-   console.log(`No information was found for file ${fileId}`);
-   await skillsWriter.saveErrorCard(SkillsErrorEnum.NO_INFO_FOUND);
+// initialize the writer with the FilesReader instance,
+// informing the writer how to and where to write any metadata
+const writer = new SkillsWriter(reader.getFileContext());
+
+// Write a "Processing"-card as metadata to the file on Box, 
+// informing a user of the skill in process.
+await writer.saveProcessingCard();
+
+// Finally, kick off your theoretical machine learning provider
+try {
+  // (this code is pseudo code)
+  const data = await new MLProvider(fileUrl).process()
+} catch {
+  // Write an "Error"-card as metadata to your file if the processing failed
+  await writer.saveErrorCard(SkillsErrorEnum.FILE_PROCESSING_ERROR);
 }
-   
 ```
+
+### <a name='WriteMetadatatoFile'></a>3. Write Metadata to File
+
+Finally, once your machine learning provider has processed your file, you can write the data received from them as various forms of **metadata** to a file.
+
+```js
+// In this case we assume your data is some kind of array of objects with keywords
+// e.g.:
+// [
+//   { keyword: 'Keyword 1' },
+//   { keyword: 'Keyword 2' },
+//   { keyword: 'Keyword 1' },
+//   ...
+// ]
+let entries = [];
+data.forEach(entry => {
+  entries.push({
+    type: 'text',
+    text: entry.keyword
+  })
+});
+
+// Convert the entries into a Keyword Card
+const card = writer.createTopicsCard(entries);
+
+// Write the card as metadata to the file
+await writer.saveDataCards(card);
+```
+
+### <a name='OptionalDealwitherrors'></a>(Optional) Deal with errors
+
+In any of these steps a failure, either when reading the file, processing the file, or writing the metadata to the file.
+
+The skills kit makes it simple to write powerful error messages to your file as metadata cards.
+
+```js
+const { SkillsErrorEnum } = require('./skills-kit-2.0');
+await writer.saveErrorCard(SkillsErrorEnum.FILE_PROCESSING_ERROR);
+```
+
+See the Skills Kit API documentation for a [full list of available errors](skills-kit-library#error-enum).
