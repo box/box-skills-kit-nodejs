@@ -53,7 +53,27 @@ Additionally, have a look at:
 
 ## Installation
 
-[TODO]
+As the Skills Kit is currently not available through NPM the easiest way to use the library is by downloading it and linking it in your project.
+
+```sh
+# Clone the project
+git clone https://github.com/box/box-skills-kit-nodejs.git
+# Change into your own project
+cd your_project
+# Copy the skills kit library and the package.json
+# with its dependencies into your project
+cp -r ../box-skills-kit-nodejs/skills-kit-library .
+# Link the library into your project, and download its dependencies
+npm link ./skills-kit-library
+```
+
+Then, in your own code, you can include parts of the library as follows.
+
+```js
+// For more examples of the modules available within the
+// library, see the rest of the documentation
+const { FilesReader } = require('./skills-kit-library/skills-kit-2.0.js')
+```
 
 ## Basic usage
 
@@ -68,7 +88,7 @@ though in our example we are assuming you are using the Serverless framework
 
 ```js
 // import the FilesReader from the kit
-const { FilesReader  } = require('./skills-kit-2.0');
+const { FilesReader  } = require('./skills-kit-library/skills-kit-2.0.js');
 // Here, event is the webhook data received at your endpoint.
 const reader = new FilesReader(event.body);  
 
@@ -86,7 +106,7 @@ theoretical provider called `MLProvider`.
 ```js
 const { MLProvider } = require('your-ml-provider');
 // import the SkillsWriter and SkillsErrorEnum from the kit
-const { SkillsWriter, SkillsErrorEnum } = require('./skills-kit-2.0');
+const { SkillsWriter, SkillsErrorEnum } = require('./skills-kit-library/skills-kit-2.0.js');
 
 // initialize the writer with the FilesReader instance,
 // informing the writer how to and where to write any metadata
@@ -141,7 +161,7 @@ In any of these steps a failure, either when reading the file, processing the fi
 The skills kit makes it simple to write powerful error messages to your file as metadata cards.
 
 ```js
-const { SkillsErrorEnum } = require('./skills-kit-2.0');
+const { SkillsErrorEnum } = require('./skills-kit-library/skills-kit-2.0.js');
 await writer.saveErrorCard(SkillsErrorEnum.FILE_PROCESSING_ERROR);
 ```
 
