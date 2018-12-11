@@ -20,7 +20,7 @@ Next generate your cloud provider keys to setup in serverless keys, through any 
 
 * AWS Lambda -> [console](https://aws.amazon.com/lambda/) | [instructions to create keys](https://serverless.com/framework/docs/providers/aws/guide/credentials#creating-aws-access-keys)
 * IBM Open Whisk -> [console](https://www.ibm.com/cloud/functions/details) | [instructions to create keys](https://serverless.com/framework/docs/providers/openwhisk/guide/credentials/)
-* Google Cloud Functions -> [console](https://cloud.google.com/functions/)| [instructions to create keys](https://serverless.com/framework/docs/providers/azure/guide/credentials/)
+* Google Cloud Functions -> [console](https://cloud.google.com/functions/)| [instructions to create keys](https://serverless.com/framework/docs/providers/google/guide/credentials/)
 * Microsoft Azure -> [console](https://azure.microsoft.com/en-us/overview/serverless-computing/) | [instructions to create keys](https://serverless.com/framework/docs/providers/azure/guide/credentials/)
 * Others provider options -> [Kubeless, Spotinst, Auth0, Fn, etc](https://serverless.com/framework/docs/providers/)
 
