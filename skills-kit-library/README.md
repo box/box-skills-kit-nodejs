@@ -7,7 +7,9 @@ The Box Skills Kit Node.js Library contains two classes:
 Using these two classes, your application can retrieve files as they're uploaded to Box for processing and write the outputs of the processing to Box's metadata. This metadata information can be used to drive other Box functionality, such as search and preview.
 
 ## FilesReader
-A helpful class to capture file information from the incoming event notification from Box and to retrieve the file's content from Box
+A helpful class to capture file information from the incoming event notification from Box and to retrieve the file's content from Box.
+
+#### Note: BasicFormat functions allows you to access files stored in Box in another format, which may be more accepted by ML providers. The provided basic formats are Audio files→.mp3, Document/Image files→extracted_text, Video files→.mp4. Caution should be excercised using BasicFormats for certain large files as it involves a time delay, and your skill code or skills-engine request may time out before the converted format is fetched.
 
 **FilesReader( boxEvent.body ) CONSTRUCTOR**
 
@@ -22,7 +24,6 @@ A helpful class to capture file information from the incoming event notification
 | async getBasicFormatContentBase64()         | String           | Same as filesReader.getFileContext().getContentBase64() but in BasicFormat (See Note below)                                                                     |
 | async getBasicFormatContentStream()         | Stream           | Same as filesReader.getFileContext().getContentStream() but in BasicFormat(See Note below)                                                                      |
 
-#### Note: BasicFormat functions allows you to access files stored in Box in another format, which may be more accepted by ML providers. The provided basic formats are Audio files→.mp3, Document/Image files→extracted_text, Video files→.mp4. Caution should be excercised using BasicFormats for certain large files as it involves a time delay, and your skill code or skills-engine request may time out before the converted format is fetched.
  
  ## SkillsWriter
  A helpful class to write metadata to Box to display in cards for Topics, Transcripts, Timelines, Errors and Statuses for any file for which a Box Skill processes.
