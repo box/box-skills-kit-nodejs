@@ -22,7 +22,7 @@ A helpful class to capture file information from the incoming event notification
 | async getBasicFormatContentBase64()         | String           | Same as filesReader.getFileContext().getContentBase64() but in BasicFormat (See Note below)                                                                     |
 | async getBasicFormatContentStream()         | Stream           | Same as filesReader.getFileContext().getContentStream() but in BasicFormat(See Note below)                                                                      |
 
-Note: BasicFormat functions allows you to access files stored in Box in another format, which may be more accepted by ML providers. The provided basic formats are Audio files→.mp3, Document/Image files→extracted_text, Video files→.mp4. Caution should be excercised using BasicFormats for certain large files as it involves a time delay, and your skill code or skills-engine request may time out before the converted format is fetched.
+#### Note: BasicFormat functions allows you to access files stored in Box in another format, which may be more accepted by ML providers. The provided basic formats are Audio files→.mp3, Document/Image files→extracted_text, Video files→.mp4. Caution should be excercised using BasicFormats for certain large files as it involves a time delay, and your skill code or skills-engine request may time out before the converted format is fetched.
  
  ## SkillsWriter
  A helpful class to write metadata to Box to display in cards for Topics, Transcripts, Timelines, Errors and Statuses for any file for which a Box Skill processes.
