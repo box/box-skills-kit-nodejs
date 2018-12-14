@@ -1,5 +1,5 @@
 // Import FilesReader and SkillsWriter classes from skills-kit-2.0.js library
-const { FilesReader, SkillsWriter, SkillsErrorEnum } = require('skills-kit-lib/skills-kit-2.0');
+const { FilesReader, SkillsWriter, SkillsErrorEnum } = require('skills-kit-library/skills-kit-2.0');
 
 module.exports.handler = async (event, context, callback) => {
     console.debug(`Box event received: ${JSON.stringify(event)}`);

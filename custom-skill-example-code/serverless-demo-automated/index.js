@@ -1,5 +1,5 @@
 // Import FilesReader and SkillsWriter classes from skills-kit-2.0.js library
-const { FilesReader, SkillsWriter, SkillsErrorEnum } = require('skills-kit-lib/skills-kit-2.0');
+const { FilesReader, SkillsWriter, SkillsErrorEnum } = require('library/skills-kit-2.0');
 
 module.exports.handler = async (event, context, callback) => {
     // During code development you can copy an incoming box skills event
@@ -51,7 +51,7 @@ module.exports.handler = async (event, context, callback) => {
         // Save the cards to Box in a single calls to show in UI.
         // Incase the skill is invoked on a new version upload of the same file,
         // this call will override any existing skills cards, data or error, on Box file preview.
-        console.log(`cardss ${cards}`);
+        console.log(`cards ${JSON.stringify(cards)}`);
         await skillsWriter.saveDataCards(cards);
     } catch (error) {
         // Incase of error, write back an error card to UI.
