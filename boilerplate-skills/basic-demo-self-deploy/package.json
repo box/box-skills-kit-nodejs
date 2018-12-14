@@ -6,6 +6,7 @@
     "license": "Apache-2.0",
     "homepage": "https://developer.box.com/docs/box-skills",
     "scripts": {
-        "postinstall": "npm link ../../skills-kit-library;"
+        "postinstall": "npm link ../../skills-kit-library;",
+        "deploy": "node deploy.js"
     }
 }

@@ -1,6 +1,6 @@
 ## Example Box Skill Code Using Only Skills-Kit-Lib
 
-If you prefer a self-managed deployment, you can setup your own server running a node application and copy and use the files from [basic-demo-self-deploy](basic-demo-self-deploy). With the endpoint created to received Skills event from Box, configure it with Box using this [registration form](https://goo.gl/forms/Z5K6MLKSIEJv1rih2).
+If you prefer a self-managed deployment, you can setup your own server running a node application and copy and use the files from [basic-demo-self-deploy](basic-demo-self-deploy). With the endpoint created to received Skills event from Box, [configure it with Box](https://developer.box.com/docs/configure-a-box-skill).
 
 ## Example Box Skill Code using Skills-Kit-Lib, Serverless, Eslint & Jest
 
@@ -13,7 +13,7 @@ The automated way of deploying and hosting your skills code is by putting it on 
 
 As pre-requisites install the following locally on your developement machine:
 
-* [Node](https://nodejs.org/dist/latest-v8.x/) (we recommend node-8 because then your development and deployment environment would match. Once you download and install node, you get access to the npm CLI or command line interface/terminal for all the commands later on) 
+* [Node](https://nodejs.org/dist/latest-v8.x/) (we recommend node-8 because then your development and deployment environment would match. Once you download and install node, you get access to the npm CLI or command line interface/terminal for all the commands later on)
 * [Serverless](https://serverless.com) ( hint: you may need to use sudo npm install )
 
 Next generate your cloud provider keys to setup in serverless keys, through any provider of your choice:
@@ -29,14 +29,15 @@ You can setup your local serverless to use your new keys with this [sample comma
 Next, copy this git project locally
 
 ```
-   git clone https://github.com/box/box-skills-kit-nodejs.git 
+   git clone https://github.com/box/box-skills-kit-nodejs.git
 ```
+
 or download and unzip: https://github.com/box/box-skills-kit-nodejs/archive/master.zip
-   
+
 Finally, deploy serverless-demo-automated code using the Node CLI with **a single command**. Everytime you make change to the code, you need to rerun this command.
 
 ```
-   cd  box-skills-kit-nodejs/custom-skill-example-code/serverless-demo-automated
+   cd  box-skills-kit-nodejs/boilerplate-skills/serverless-demo-automated
    npm run deploy
 ```
 
@@ -45,16 +46,16 @@ You should see an output such as this-
 ```
 npm run deploy
 
-> serverless-demo-automated@1.0.0 deploy /your-project-path/box-skills-kit/custom-skill-example-code/serverless-demo-automated
+> serverless-demo-automated@1.0.0 deploy /your-project-path/box-skills-kit/boilerplate-skills/serverless-demo-automated
 > npm install;  ./node_modules/.bin/serverless deploy
 
 
-> serverless-demo-automated@1.0.0 postinstall /your-project-path/box-skills-kit/custom-skill-example-code/serverless-demo-automated
+> serverless-demo-automated@1.0.0 postinstall /your-project-path/box-skills-kit/boilerplate-skills/serverless-demo-automated
 > npm link ../../skills-kit-library
 
 up to date in 0.589s
 /your-home-path/.nvm/versions/node/v9.4.0/lib/node_modules/skills-kit-lib -> /your-project-path/box-skills-kit/skills-kit-library
-/your-project-path/box-skills-kit/custom-skill-example-code/serverless-demo-automated/node_modules/skills-kit-library -> /your-home-path/.nvm/versions/node/v9.4.0/lib/node_modules/skills-kit-lib -> /your-project-path/box-skills-kit/skills-kit-library
+/your-project-path/box-skills-kit/boilerplate-skills/serverless-demo-automated/node_modules/skills-kit-library -> /your-home-path/.nvm/versions/node/v9.4.0/lib/node_modules/skills-kit-lib -> /your-project-path/box-skills-kit/skills-kit-library
 removed 1 package in 4.768s
 Serverless: Packaging service...
 Serverless: Excluding development dependencies...
@@ -83,8 +84,7 @@ functions:
   skill: my-quick-automated-demo-dev-skill
 ```
 
-Use this endpoint `https://**********.execute-api.us-west-2.amazonaws.com/dev/my-quick-automated-demo` to register your skill with box using this [registration form](https://goo.gl/forms/Z5K6MLKSIEJv1rih2). Everytime, a file is uploaded, moved or copied to one of the folder under the enterprise where your skill is enabled, your service would recieve an event, and you can see your code execution log, logging into your cloud portal.
-
+Use this endpoint `https://**********.execute-api.us-west-2.amazonaws.com/dev/my-quick-automated-demo` to [configure your skill with box](https://developer.box.com/docs/configure-a-box-skill). Everytime, a file is uploaded, moved or copied to one of the folder under the enterprise where your skill is enabled, your service would recieve an event, and you can see your code execution log, logging into your cloud portal.
 
 ### Using Eslint (formatting) and Jest (testing)
 
@@ -102,5 +102,5 @@ npm run test
 
 A lambda cloud function is a short-lived server instance that only exists when it recieves an event, and shut down when it the request has been processed. This can helpful in case you skill deployment follows the following architectures, since it doesn't use any more or less of the uptime than required to process your request. However, you can also be running your own server with multiple nodejs services. In either case you would need to look at individual case of how long the processing needs to run, if it's synchronous or asychronous, and architect your services accordingly by as either of these models.
 
-| <img width="420" alt="multiple server architecture" src="https://github.com/box/box-skills-kit-nodejs/blob/master/custom-skill-example-code/multiple-server-model.png?raw=true"> |
-<img width="420" alt="single server architecture" src="https://github.com/box/box-skills-kit-nodejs/blob/master/custom-skill-example-code/single-server-model.png?raw=true"> |
+| <img width="420" alt="multiple server architecture" src="https://github.com/box/box-skills-kit-nodejs/blob/master/boilerplate-skills/multiple-server-model.png?raw=true"> |
+<img width="420" alt="single server architecture" src="https://github.com/box/box-skills-kit-nodejs/blob/master/boilerplate-skills/single-server-model.png?raw=true"> |
