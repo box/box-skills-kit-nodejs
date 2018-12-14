@@ -48,7 +48,7 @@ For more information on Box Skills, what kind of metadata you can write back to 
 Additionally, have a look at:
 
 * More documentation on the [library's API](skills-kit-library)
-* A quick start on [deploying your first skills service](custom-skill-example-code)
+* A quick start on [deploying your first skills service](boilerplate-skills)
 * [More samples](https://github.com/box-community) of Box Custom Skills using various ML providers
 
 ## Installation
@@ -77,7 +77,7 @@ const { FilesReader } = require('./skills-kit-library/skills-kit-2.0.js')
 
 ## Basic usage
 
-Writing your own Custom Skill will change depending on your data and the machine learning provider used. A generic example would look something like this.
+Writing your own Custom Box Skill will change depending on your data and the machine learning provider used. A generic example would look something like this.
 
 
 ### <a name='Readingthewebhookpayload'></a>1. Reading the webhook payload
