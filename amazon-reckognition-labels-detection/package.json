@@ -1,0 +1,34 @@
+{
+  "name": "redactskill",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "@google-cloud/dlp": "^0.9.0",
+    "aws-sdk": "^2.363.0",
+    "axios": "^0.18.0",
+    "box-node-sdk": "^1.22.0",
+    "semver": "^5.6.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^8.2.2",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-import": "^2.9.0",
+    "jest": "^22.4.3",
+    "prettier": "^1.11.1",
+    "serverless": "^1.28.0"
+  },
+  "scripts": {
+    "format": "NODE_ENV=dev ./node_modules/.bin/prettier \"**/*.js\" --print-width 120 --single-quote --tab-width 4 --write; ./node_modules/.bin/eslint \"**/*.js\" --fix",
+    "test": "NODE_ENV=dev ./node_modules/.bin/jest --coverage",
+    "build": "npm link ./skills-kit-lib; npm install;",
+    "deploy": "npm run build;  ./node_modules/.bin/serverless deploy",
+    "deployFunction": "./node_modules/.bin/serverless deploy function -f skill",
+    "undeploy": "NODE_ENV=dev ./node_modules/.bin/serverless remove -v",
+    "postinstall": "npm rebuild grpc --target=8.10.0 --target_arch=x64 --target_platform=linux --target_libc=glibc"
+  },
+  "author": "",
+  "license": "ISC"
+}

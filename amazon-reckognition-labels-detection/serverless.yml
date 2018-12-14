@@ -1,0 +1,38 @@
+# For full Serverless config options, check the docs:
+#    https://serverless.com/framework/docs/providers/aws/guide/serverless.yml/
+
+service: box-redact-skill-demo
+
+# You can change this to any cloud provider:
+# AWS Lambda: <https://aws.amazon.com/lambda/>
+# Microsoft Azure: <https://azure.microsoft.com/en-us/overview/serverless-computing/>
+# Google Cloud Functions: <https://cloud.google.com/functions/>
+# IBM Cloud Functions: <https://www.ibm.com/cloud/functions/details>
+#
+# before you deploy your app, you should set credential with the follow cmd:
+# serverless config credentials --provider aws --key $AWS_KEY$ --secret $AWS_SECRET$ -o
+provider:
+  name: aws
+  runtime: nodejs8.10
+  timeout: 10 # server should still acknowledge Box skills engine within 10 seconds of receiving the event
+  versionFunctions: true # maintains past versions in single deployment
+
+
+# overwriting defaults
+  stage: ${opt:stage, 'dev'}
+  region: us-west-2
+
+# packaging information
+package:
+  include:
+    - index.js
+    - package.json
+    - node_modules
+
+functions:
+  skill:
+    handler: index.handler
+    events: # The Events that trigger this Function
+      - http:
+          path: ${self:service}
+          method: any
