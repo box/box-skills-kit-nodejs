@@ -9,7 +9,7 @@ Using these two classes, your application can retrieve files as they're uploaded
 ## FilesReader
 A helpful class to capture file information from the incoming event notification from Box and to retrieve the file's content from Box.
 
-#### Note: BasicFormat functions allows you to access files stored in Box in another format, which may be more accepted by ML providers. The provided basic formats are Audio files→.mp3, Document/Image files→extracted_text, Video files→.mp4. Caution should be excercised using BasicFormats for certain large files as it involves a time delay, and your skill code or skills-engine request may time out before the converted format is fetched.
+#### Note: BasicFormat functions allows you to access files stored in Box in another format, which may be more accepted by ML providers. The provided basic formats are Audio files→.mp3, Image files-> .jpg, Document files→extracted_text, Video files→.mp4. Caution should be excercised using BasicFormats for certain large files as it involves a time delay, and your skill code or skills-engine request may time out before the converted format is fetched.
 
 **FilesReader( boxEvent.body ) CONSTRUCTOR**
 
