@@ -18,7 +18,7 @@ To use Serverless, install the NPM module.
 Deploying
 Clone this repo and change directory into the amazon-label-skill folder
 
-git clone https://github.com/box-community/sample-document-skills cd amazon-label-skill
+git clone https://github.com/box-community/sample-document-skills cd amazon-reckognition-labels-detection
 
 Deploy to AWS using serverless serverless deploy -v
 
