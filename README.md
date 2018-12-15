@@ -151,7 +151,7 @@ data.forEach(entry => {
 const card = writer.createTopicsCard(entries);
 
 // Write the card as metadata to the file
-await writer.saveDataCards(card);
+await writer.saveDataCards([card]);
 ```
 
 ### <a name='OptionalDealwitherrors'></a>(Optional) Deal with errors
