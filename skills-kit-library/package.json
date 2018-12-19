@@ -1,12 +1,16 @@
 {
     "name": "skills-kit-library",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "Boilerplate Box Skill Code Using Skills-Kit, Serverless, Eslint, Jest",
     "author": "Box <oss@box.com>",
     "license": "Apache-2.0",
     "homepage": "https://developer.box.com/docs/box-skills",
+    "scripts": {
+        "test": "jest --coverage"
+    },
     "dependencies": {
         "box-node-sdk": "^1.9.0",
+        "jest": "^22.4.3",
         "jimp": "^0.5.4",
         "lodash": "^4.17.10",
         "path": "^0.12.7",
@@ -15,5 +19,17 @@
     "repository": {
         "type": "git",
         "url": "git@github.com:box/box-skills-kit-nodejs.git"
+    },
+    "jest": {
+        "verbose": true,
+        "testURL": "http://localhost",
+        "coverageThreshold": {
+            "global": {
+              "branches": 65,
+              "functions": 85,
+              "lines": 85,
+              "statements": 85
+            }
+        }
     }
 }
