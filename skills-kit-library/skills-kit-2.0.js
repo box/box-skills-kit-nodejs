@@ -100,7 +100,7 @@ const SkillsErrorEnum = {
     INVALID_EVENT: 'skills_invalid_event_error',
     NO_INFO_FOUND: 'skills_no_info_found',
     INVOCATIONS_ERROR: 'skills_invocations_error',
-    EXTERNAL_AUTH_ERROR: 'skills_external_auth_error.',
+    EXTERNAL_AUTH_ERROR: 'skills_external_auth_error',
     BILLING_ERROR: 'skills_billing_error',
     UNKNOWN: 'skills_unknown_error'
 };
@@ -195,7 +195,7 @@ const readStreamToString = function readStreamToString(stream) {
  * @returns {Promise<string>} A promise resolving to the content URL template
  */
 function pollRepresentationInfo(client, infoURL) {
-    return this.fileReadClient.get(infoURL).then((response) => {
+    return client.get(infoURL).then((response) => {
         if (response.statusCode !== 200) {
             console.error(`Unexpected response ${response}`);
         }
