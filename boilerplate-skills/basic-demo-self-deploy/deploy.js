@@ -9,17 +9,27 @@ const http = require('http');
 const util = require('util');
 
 const hostname = '127.0.0.1'; // replace with your public IP
-const port = 8000;
+const port = 443; // Box is only able to send events to an https endpoint, make sure you have generated
+// and added an SSL certificate, even if just for testing.
 
-//Create HTTP server and listen on port 8000 for requests
+//Create HTTP server and listen on port 443 for requests
+
 const server = http.createServer((req, res) => {
     console.log(`Box Skills Request recieved: ${util.inspect(req)}`);
 
-    index.handler(req).then(function(resolve, reject) {
-        //Set the response HTTP header with HTTP status and Content type
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'text/plain');
-        res.end('Skill Processed');
+    let body = '';
+    req.on('data', chunk => {
+        body += chunk;
+    });
+    req.on('end', () => {
+        console.log(`body = ${body}`);
+
+        index.handler(body).then((resolve, reject) => {
+            // Set the response HTTP header with HTTP status and Content type
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'text/plain');
+            res.end('Skill Processed');
+        });
     });
 });
 
