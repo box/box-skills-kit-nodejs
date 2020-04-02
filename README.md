@@ -32,7 +32,7 @@ At a basic level, a Box Skill follows the following steps.
 1. Your server (using the Box Skills kit) processes the webhook's event payload
 1. Your server downloads the file, or passes a reference to the file to your machine learning provider
 1. Your machine learning provider processes the file and provides some data to your server
-1. Your server (using the Box Skills kit) writes rick metadata to the file on Box
+1. Your server (using the Box Skills kit) writes rich metadata to the file on Box
 1. Your users will now have new metadata available to them in the Box web app, including while searching for files.
 
 ## What is this toolkit for?
